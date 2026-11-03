@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
+import { useToast } from "@/context/ToastContext";
 import {
   ArrowLeft,
   Heart,
@@ -19,6 +20,7 @@ import {
 export default function PhotoDetailClient({ id }: { id: string }) {
   const { isLoggedIn, login } = useAuth();
   const { photos, isFavorite, toggleLike, getLikesCount } = usePhotos();
+  const { toast } = useToast();
 
   const photo = photos.find((p) => p.id === id);
 
@@ -44,6 +46,7 @@ export default function PhotoDetailClient({ id }: { id: string }) {
     } else {
       setUserReaction(type);
       setReactions((prev) => ({ ...prev, [type]: prev[type] + 1 }));
+      toast.success("✨ রিঅ্যাকশন যোগ করা হয়েছে!");
     }
   };
 
@@ -51,7 +54,22 @@ export default function PhotoDetailClient({ id }: { id: string }) {
     if (typeof window !== "undefined") {
       navigator.clipboard?.writeText(window.location.href);
       setCopied(true);
+      toast.success("🔗 ছবির লিঙ্ক ক্লিপবোর্ডে কপি হয়েছে!");
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleLike = () => {
+    if (!isLoggedIn) {
+      toast.warning("ছবি ফেভারিটে যুক্ত করতে অনুগ্রহ করে লগইন করুন!");
+      return;
+    }
+    const alreadyLiked = isFavorite(photo.id);
+    toggleLike(photo.id);
+    if (alreadyLiked) {
+      toast.info("ফেভারিট থেকে সরানো হয়েছে");
+    } else {
+      toast.success("❤️ ফেভারিটে যোগ করা হয়েছে!");
     }
   };
 
@@ -176,7 +194,7 @@ export default function PhotoDetailClient({ id }: { id: string }) {
                   {/* Real Favorite Button */}
                   <button
                     type="button"
-                    onClick={() => toggleLike(photo.id)}
+                    onClick={handleLike}
                     className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
                       userHasLiked
                         ? "border-rose-500/50 bg-rose-500/20 text-rose-300"

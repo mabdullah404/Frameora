@@ -4,8 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { useAuth, UserRole } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
+import { useToast } from "@/context/ToastContext";
 import UploadModal from "@/components/UploadModal";
 import {
   Camera,
@@ -17,50 +18,48 @@ import {
   ShieldCheck,
   User,
   LogOut,
-  ChevronDown,
   Menu,
   X,
-  ExternalLink,
-  Sparkles,
   UploadCloud,
 } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isLoggedIn, user, role, setRole, logout } = useAuth();
+  const { isLoggedIn, user, role, logout } = useAuth();
   const { isUploadModalOpen, openUploadModal, closeUploadModal, favorites } = usePhotos();
+  const { toast } = useToast();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-  const roleRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
         setIsProfileOpen(false);
-      }
-      if (roleRef.current && !roleRef.current.contains(e.target as Node)) {
-        setIsRoleDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const navLinks = [
-    { name: "Home", href: "/", icon: Home },
-    { name: "Explore", href: "/explore", icon: Compass },
-    { name: `Favorites (${favorites.length})`, href: "/explore?tab=favorites", icon: Heart },
-    { name: "Albums", href: "/profile?tab=albums", icon: FolderOpen },
-  ];
+  const navLinks = isLoggedIn
+    ? [
+        { name: "Home", href: "/", icon: Home },
+        { name: "Explore All", href: "/explore", icon: Compass },
+        { name: `Favorites (${favorites.length})`, href: "/explore?tab=favorites", icon: Heart },
+        { name: "Albums", href: "/profile?tab=albums", icon: FolderOpen },
+      ]
+    : [
+        { name: "Home", href: "/", icon: Home },
+        { name: "Photography", href: "/explore", icon: Compass },
+      ];
 
-  const roleColors: Record<UserRole, { bg: string; text: string; dot: string; label: string }> = {
-    guest: { bg: "bg-amber-500/10 border-amber-500/30", text: "text-amber-400", dot: "bg-amber-400", label: "Guest" },
-    user: { bg: "bg-blue-500/10 border-blue-500/30", text: "text-blue-400", dot: "bg-blue-400", label: "Member" },
-    admin: { bg: "bg-purple-500/10 border-purple-500/30", text: "text-purple-400", dot: "bg-purple-400", label: "Admin" },
+  const handleLogout = () => {
+    logout();
+    setIsProfileOpen(false);
+    toast.info("Logged out successfully");
   };
 
   return (
@@ -68,7 +67,7 @@ export default function Navbar() {
       <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#0a0b10]/85 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
           
-          {/* Logo matching mockup */}
+          {/* Logo */}
           <div className="flex items-center gap-6">
             <Link
               href="/"
@@ -87,46 +86,32 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation Links matching Mockup */}
+          {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-1 bg-white/[0.03] border border-white/[0.06] rounded-full px-3 py-1.5 backdrop-blur-md">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href) && !link.href.includes("?"));
+              const Icon = link.icon;
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative px-4 py-1.5 text-sm font-medium transition-all rounded-full ${
+                  className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
                     isActive
-                      ? "text-white bg-white/10 shadow-sm"
-                      : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
+                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/30"
+                      : "text-gray-300 hover:text-white hover:bg-white/[0.06]"
                   }`}
                 >
-                  {link.name}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-[2px] bg-purple-400 rounded-full" />
-                  )}
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{link.name}</span>
                 </Link>
               );
             })}
           </div>
 
-          {/* Right Action Section */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Right Action Icons & Auth Controls */}
+          <div className="flex items-center gap-3">
             
-            {/* REAL Photo Upload Button if logged in */}
-            {isLoggedIn && (
-              <button
-                type="button"
-                onClick={openUploadModal}
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-purple-600/30 hover:brightness-110 hover:scale-[1.02] transition-all"
-                title="Upload Photo to MongoDB"
-              >
-                <UploadCloud className="h-3.5 w-3.5" />
-                <span>Upload</span>
-              </button>
-            )}
-
-            {/* Quick Search Button */}
+            {/* Quick Search */}
             <Link
               href="/explore"
               className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors"
@@ -135,70 +120,53 @@ export default function Navbar() {
               <Search className="h-4 w-4" />
             </Link>
 
-            {/* Quick RBAC Role Selector Dropdown */}
-            <div className="relative" ref={roleRef}>
+            {/* Upload Button: Unlocked for logged-in members */}
+            {isLoggedIn ? (
               <button
                 type="button"
-                onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${roleColors[role].bg} ${roleColors[role].text}`}
-                title="Change active user role"
+                onClick={openUploadModal}
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-purple-600/30 hover:brightness-110 hover:scale-[1.02] transition-all"
+                title="Upload Photo to Server"
               >
-                <span className={`h-2 w-2 rounded-full ${roleColors[role].dot} animate-pulse`} />
-                <span>{roleColors[role].label}</span>
-                <ChevronDown className="h-3 w-3 opacity-70" />
+                <UploadCloud className="h-3.5 w-3.5" />
+                <span>Upload</span>
               </button>
+            ) : null}
 
-              {isRoleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 rounded-xl border border-white/10 bg-[#121422] p-1.5 shadow-2xl backdrop-blur-xl z-50">
-                  <div className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-                    Select Role View
-                  </div>
-                  {(["guest", "user", "admin"] as UserRole[]).map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        setRole(r);
-                        setIsRoleDropdownOpen(false);
-                      }}
-                      className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                        role === r
-                          ? "bg-purple-600/20 text-purple-300 font-semibold"
-                          : "text-gray-300 hover:bg-white/5"
-                      }`}
-                    >
-                      <span className="capitalize">{r === "user" ? "Member (User)" : r}</span>
-                      {role === r && <span className="text-purple-400">✓</span>}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Admin Dashboard Quick Shortcut if Admin */}
-            {role === "admin" && (
+            {/* Admin Shortcut if Admin */}
+            {isLoggedIn && role === "admin" && (
               <Link
                 href="/admin"
-                className="flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-purple-600/20 px-3.5 py-1.5 text-xs font-semibold text-purple-300 hover:bg-purple-600/30 hover:border-purple-400 transition-all glow-purple-sm"
+                className="hidden lg:inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-purple-600/20 px-3.5 py-1.5 text-xs font-semibold text-purple-300 hover:bg-purple-600/30 hover:border-purple-400 transition-all glow-purple-sm"
               >
                 <ShieldCheck className="h-3.5 w-3.5 text-purple-400" />
                 <span>Admin</span>
               </Link>
             )}
 
-            {/* User Profile or Sign In */}
+            {/* User Profile (Logged In) OR Sign In / Sign Up (Visitor) */}
             {!isLoggedIn ? (
-              <Link
-                href="/signin"
-                className="rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-purple-600/25 hover:from-purple-500 hover:to-indigo-500 hover:shadow-purple-500/40 transition-all"
-              >
-                Sign In
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/signin"
+                  className="rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1.5 text-xs font-semibold text-purple-300 hover:bg-purple-600 hover:text-white transition-all"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="hidden sm:inline-flex rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-purple-600/30 hover:brightness-110 transition-all"
+                >
+                  Create Account
+                </Link>
+              </div>
             ) : (
               <div className="relative" ref={profileRef}>
                 <button
                   type="button"
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center gap-2 rounded-full p-0.5 hover:ring-2 hover:ring-purple-500/50 transition-all"
+                  aria-label="User profile menu"
                 >
                   <div className="relative h-9 w-9 overflow-hidden rounded-full border border-purple-500/40">
                     <Image
@@ -213,34 +181,34 @@ export default function Navbar() {
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/10 bg-[#121422] p-2 shadow-2xl backdrop-blur-xl z-50">
                     <div className="border-b border-white/[0.08] px-3 py-2.5">
-                      <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
-                      <p className="text-xs text-gray-400 truncate">@{user?.username}</p>
+                      <p className="text-sm font-semibold text-white truncate">{user?.name || "Member"}</p>
+                      <p className="text-xs text-gray-400 truncate">@{user?.username || "user"}</p>
                       <span className="mt-1.5 inline-block rounded-full bg-purple-500/20 px-2 py-0.5 text-[10px] font-semibold text-purple-300 uppercase tracking-wide">
-                        {role}
+                        {role === "admin" ? "Admin" : "Member"}
                       </span>
                     </div>
 
                     <div className="py-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          openUploadModal();
-                        }}
-                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-purple-300 hover:bg-purple-600/10 transition-colors"
-                      >
-                        <UploadCloud className="h-4 w-4 text-purple-400" />
-                        <span>Upload Photo</span>
-                      </button>
-
                       <Link
                         href="/profile"
                         onClick={() => setIsProfileOpen(false)}
                         className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
                       >
                         <User className="h-4 w-4 text-purple-400" />
-                        <span>My Profile</span>
+                        <span>My Profile & Albums</span>
                       </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          openUploadModal();
+                        }}
+                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                      >
+                        <UploadCloud className="h-4 w-4 text-purple-400" />
+                        <span>Upload New Photo</span>
+                      </button>
 
                       {role === "admin" && (
                         <Link
@@ -257,10 +225,7 @@ export default function Navbar() {
                     <div className="border-t border-white/[0.08] pt-1">
                       <button
                         type="button"
-                        onClick={() => {
-                          logout();
-                          setIsProfileOpen(false);
-                        }}
+                        onClick={handleLogout}
                         className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
                       >
                         <LogOut className="h-4 w-4" />
@@ -271,25 +236,12 @@ export default function Navbar() {
                 )}
               </div>
             )}
-          </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 md:hidden">
-            {isLoggedIn && (
-              <button
-                type="button"
-                onClick={openUploadModal}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-white"
-                title="Upload Photo"
-              >
-                <UploadCloud className="h-4 w-4" />
-              </button>
-            )}
-
+            {/* Mobile Menu Toggle Button */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-gray-300 hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-gray-300 hover:text-white md:hidden"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -313,33 +265,20 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              {isLoggedIn && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    openUploadModal();
-                  }}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-purple-300 bg-purple-600/10 border border-purple-500/30"
-                >
-                  <UploadCloud className="h-4 w-4 text-purple-400" />
-                  <span>Upload Photo to MongoDB</span>
-                </button>
-              )}
-
-              {role === "admin" && (
-                <Link
-                  href="/admin"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-lg bg-purple-600/10 border border-purple-500/30 px-3 py-2 text-sm font-semibold text-purple-300"
-                >
-                  <ShieldCheck className="h-4 w-4 text-purple-400" />
-                  <span>Admin Dashboard</span>
-                </Link>
-              )}
-
               {isLoggedIn ? (
                 <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      openUploadModal();
+                    }}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-purple-300 bg-purple-600/10 border border-purple-500/30"
+                  >
+                    <UploadCloud className="h-4 w-4 text-purple-400" />
+                    <span>Upload Photo</span>
+                  </button>
+
                   <Link
                     href="/profile"
                     onClick={() => setIsMenuOpen(false)}
@@ -348,10 +287,22 @@ export default function Navbar() {
                     <User className="h-4 w-4 text-purple-400" />
                     <span>My Profile</span>
                   </Link>
+
+                  {role === "admin" && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-lg bg-purple-600/10 border border-purple-500/30 px-3 py-2 text-sm font-semibold text-purple-300"
+                    >
+                      <ShieldCheck className="h-4 w-4 text-purple-400" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  )}
+
                   <button
                     type="button"
                     onClick={() => {
-                      logout();
+                      handleLogout();
                       setIsMenuOpen(false);
                     }}
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-rose-400 hover:bg-rose-500/10"
@@ -361,20 +312,29 @@ export default function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link
-                  href="/signin"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="mt-2 text-center rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white"
-                >
-                  Sign In
-                </Link>
+                <div className="mt-2 flex flex-col gap-2 pt-2 border-t border-white/[0.08]">
+                  <Link
+                    href="/signin"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-center rounded-xl border border-purple-500/30 bg-purple-500/10 py-2.5 text-xs font-semibold text-purple-300"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full text-center rounded-xl bg-purple-600 py-2.5 text-xs font-semibold text-white shadow-md shadow-purple-600/30"
+                  >
+                    Create Free Account
+                  </Link>
+                </div>
               )}
             </div>
           </div>
         )}
       </header>
 
-      {/* Global Upload Modal */}
+      {/* Upload Modal (Global) */}
       <UploadModal isOpen={isUploadModalOpen} onClose={closeUploadModal} />
     </>
   );

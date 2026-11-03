@@ -112,15 +112,8 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Contextual Status Badge */}
+          {/* Contextual Status Badge for Members & Admin */}
           <div className="mt-6">
-            {role === "guest" && (
-              <p className="inline-flex items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs text-amber-300">
-                <span>✨ Guest Preview Mode: Public nature & photography unlocked.</span>
-                <Link href="/signin" className="underline font-semibold hover:text-white">Sign In</Link>
-                <span>to view all 6 albums!</span>
-              </p>
-            )}
             {role === "user" && (
               <p className="inline-flex items-center gap-2 rounded-lg bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 text-xs text-blue-300">
                 <Sparkles className="h-3.5 w-3.5" />

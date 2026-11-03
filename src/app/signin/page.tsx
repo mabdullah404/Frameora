@@ -5,10 +5,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function SignInPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notification, setNotification] = useState("");
@@ -32,12 +34,15 @@ export default function SignInPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login(email.includes("admin") ? "admin" : "user");
+    const roleChoice = email.includes("admin") ? "admin" : "user";
+    login(roleChoice);
+    toast.success("সফলভাবে লগইন হয়েছে! সকল অ্যালবাম আনলক করা হয়েছে।");
     router.push("/explore");
   };
 
   const handleQuickDemo = (roleChoice: "user" | "admin") => {
     login(roleChoice);
+    toast.success(roleChoice === "admin" ? "অ্যাডমিন প্যানেল আনলক হয়েছে!" : "মেম্বার অ্যাক্সেস আনলক হয়েছে!");
     router.push(roleChoice === "admin" ? "/admin" : "/explore");
   };
 

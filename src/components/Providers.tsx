@@ -2,11 +2,14 @@
 
 import { AuthProvider } from "@/context/AuthContext";
 import { PhotoProvider } from "@/context/PhotoContext";
+import { ToastProvider } from "@/context/ToastContext";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <PhotoProvider>{children}</PhotoProvider>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <PhotoProvider>{children}</PhotoProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
 }

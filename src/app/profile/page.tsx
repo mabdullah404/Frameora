@@ -21,10 +21,12 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
+import { useToast } from "@/context/ToastContext";
 import LightboxModal from "@/components/LightboxModal";
 
 export default function ProfilePage() {
   const { user, isLoggedIn, role, updateProfile } = useAuth();
+  const { toast } = useToast();
   const {
     photos,
     favorites,
@@ -113,7 +115,17 @@ export default function ProfilePage() {
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile({ name, bio });
+    toast.success("✅ প্রোফাইল সফলভাবে আপডেট করা হয়েছে!");
     setIsEditing(false);
+  };
+
+  const handleFollowCreator = () => {
+    toggleFollowUser();
+    if (!isFollowingCreator) {
+      toast.success("✨ আব্দুল্লাহকে ফলো করা হয়েছে!");
+    } else {
+      toast.info("আনফলো করা হয়েছে");
+    }
   };
 
   const openLightbox = (index: number) => {
@@ -227,7 +239,7 @@ export default function ProfilePage() {
             {!isAdmin && (
               <button
                 type="button"
-                onClick={toggleFollowUser}
+                onClick={handleFollowCreator}
                 className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-xs font-semibold transition-all ${
                   isFollowingCreator
                     ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"

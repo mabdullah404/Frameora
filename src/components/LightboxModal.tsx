@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Photo } from "@/types/photo";
 import { usePhotos } from "@/context/PhotoContext";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 interface LightboxModalProps {
   photos: Photo[];
@@ -34,6 +36,8 @@ export default function LightboxModal({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [copied, setCopied] = useState(false);
   const { isFavorite, toggleLike, getLikesCount } = usePhotos();
+  const { isLoggedIn } = useAuth();
+  const { toast } = useToast();
 
   const currentPhoto = photos[currentIndex];
 
@@ -81,7 +85,23 @@ export default function LightboxModal({
     if (navigator.clipboard) {
       navigator.clipboard.writeText(shareUrl);
       setCopied(true);
+      toast.success("🔗 ছবির লিঙ্ক ক্লিপবোর্ডে কপি হয়েছে!");
       setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  const handleLike = () => {
+    if (!currentPhoto) return;
+    if (!isLoggedIn) {
+      toast.warning("ছবি ফেভারিটে যুক্ত করতে অনুগ্রহ করে সাইন ইন করুন!");
+      return;
+    }
+    const alreadyLiked = isFavorite(currentPhoto.id);
+    toggleLike(currentPhoto.id);
+    if (alreadyLiked) {
+      toast.info("ফেভারিট থেকে সরানো হয়েছে");
+    } else {
+      toast.success("❤️ ফেভারিটে যোগ করা হয়েছে!");
     }
   };
 
@@ -206,7 +226,7 @@ export default function LightboxModal({
           <div className="flex items-center gap-3 self-end sm:self-auto">
             <button
               type="button"
-              onClick={() => toggleLike(currentPhoto.id)}
+              onClick={handleLike}
               className={`flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
                 userHasLiked
                   ? "border-rose-500/50 bg-rose-500/20 text-rose-300 shadow-lg shadow-rose-500/20"

@@ -69,33 +69,30 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [user, setUser] = useState<AuthUser | null>(DEFAULT_ADMIN_USER);
-  const [role, setRoleState] = useState<UserRole>("admin");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [role, setRoleState] = useState<UserRole>("guest");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     try {
       const storedAuth = localStorage.getItem("frameora_auth");
-      const storedRole = localStorage.getItem("frameora_role") as UserRole | null;
       const storedUser = localStorage.getItem("frameora_user");
 
-      if (storedAuth === "false") {
-        setIsLoggedIn(false);
-        setUser(null);
-        setRoleState("guest");
-      } else if (storedUser) {
+      if (storedAuth === "true" && storedUser) {
         const parsed = JSON.parse(storedUser);
         setIsLoggedIn(true);
         setUser(parsed);
-        setRoleState(parsed.role || storedRole || "admin");
+        setRoleState(parsed.role || "user");
       } else {
-        setIsLoggedIn(true);
-        setUser(DEFAULT_ADMIN_USER);
-        setRoleState("admin");
+        setIsLoggedIn(false);
+        setUser(null);
+        setRoleState("guest");
       }
     } catch {
-      // localStorage fallback
+      setIsLoggedIn(false);
+      setUser(null);
+      setRoleState("guest");
     }
     setMounted(true);
   }, []);
@@ -165,9 +162,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({
-      isLoggedIn: mounted ? isLoggedIn : true,
-      user: mounted ? user : DEFAULT_ADMIN_USER,
-      role: mounted ? role : "admin",
+      isLoggedIn: mounted ? isLoggedIn : false,
+      user: mounted ? user : null,
+      role: mounted ? role : "guest",
       login,
       logout,
       toggleAuth,

@@ -5,10 +5,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function SignUpPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { toast } = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,6 +35,7 @@ export default function SignUpPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login("user");
+    toast.success("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! স্বাগতম ফ্রেমওরায়।");
     router.push("/explore");
   };
 
@@ -74,6 +77,7 @@ export default function SignUpPage() {
             type="button"
             onClick={() => {
               login("user");
+              toast.success("মেম্বার রেজিস্ট্রেশন সফল হয়েছে! স্বাগতম।");
               router.push("/explore");
             }}
             className="mt-2.5 w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-2.5 text-xs font-bold text-white shadow-md shadow-purple-600/30 hover:brightness-110"

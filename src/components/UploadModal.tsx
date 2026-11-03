@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
+import { useToast } from "@/context/ToastContext";
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ interface UploadModalProps {
 export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   const { user } = useAuth();
   const { uploadPhoto } = usePhotos();
+  const { toast } = useToast();
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Nature");
@@ -86,6 +88,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
       });
 
       setSuccess(true);
+      toast.success("🎉 ছবি সফলভাবে আপলোড সম্পন্ন হয়েছে!");
       setTimeout(() => {
         setSuccess(false);
         onClose();
@@ -94,9 +97,11 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         setLocation("");
         setDescription("");
         setImagePreview(null);
-      }, 1500);
+      }, 1200);
     } catch (err: any) {
-      setError(err.message || "Failed to upload photo. Please try again.");
+      const msg = err.message || "Failed to upload photo. Please try again.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

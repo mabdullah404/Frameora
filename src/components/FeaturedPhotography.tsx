@@ -5,23 +5,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
+import { useToast } from "@/context/ToastContext";
 import LightboxModal from "@/components/LightboxModal";
 import {
   Heart,
   Lock,
   Compass,
   ArrowRight,
+  Sparkles,
+  Camera,
+  UploadCloud,
+  ShieldCheck,
+  FolderOpen,
 } from "lucide-react";
 
 export default function FeaturedPhotography() {
   const { isLoggedIn, user } = useAuth();
   const { photos, isFavorite, toggleLike, getLikesCount } = usePhotos();
+  const { toast } = useToast();
 
   const [activeTab, setActiveTab] = useState<string>("All");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  // Photography folder photos (always accessible publicly to guests)
+  // Photography folder photos (always accessible publicly to visitors)
   const photographyPhotos = useMemo(() => {
     return photos.filter((p) => p.folder === "Photography" || p.category === "Photography");
   }, [photos]);
@@ -29,14 +36,15 @@ export default function FeaturedPhotography() {
   // Categories available depending on auth state
   const categories = useMemo(() => {
     if (!isLoggedIn) {
-      return ["All Photography", "Nature"];
+      return ["Photography"];
     }
-    return ["All", "Photography", "travel", "BUBT", "Memorise", "Mems", "Abdullah"];
+    return ["All", "Photography", "travel", "BUBT", "Memorise", "Mems"];
   }, [isLoggedIn]);
 
   const displayedPhotos = useMemo(() => {
     if (!isLoggedIn) {
-      return photographyPhotos.slice(0, 12);
+      // Unauthenticated visitors strictly see photography images only
+      return photographyPhotos;
     }
     if (activeTab === "All") {
       return photos.slice(0, 16);
@@ -49,6 +57,21 @@ export default function FeaturedPhotography() {
     setLightboxOpen(true);
   };
 
+  const handleLikeClick = (e: React.MouseEvent, photoId: string) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      toast.warning("ছবি ফেভারিটে যুক্ত করতে অনুগ্রহ করে সাইন ইন বা অ্যাকাউন্ট তৈরি করুন!");
+      return;
+    }
+    const alreadyLiked = isFavorite(photoId);
+    toggleLike(photoId);
+    if (alreadyLiked) {
+      toast.info("ফেভারিট থেকে সরানো হয়েছে");
+    } else {
+      toast.success("❤️ ফেভারিটে যোগ করা হয়েছে!");
+    }
+  };
+
   return (
     <section
       id="explore-preview"
@@ -59,17 +82,17 @@ export default function FeaturedPhotography() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 border border-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-300 uppercase tracking-widest mb-3">
             <Compass className="h-3.5 w-3.5" />
-            <span>Authored by Abdullah</span>
+            <span>Curated by Abdullah</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-            Curated <span className="text-gradient-purple">Frames</span>
+            Curated <span className="text-gradient-purple">Photography</span>
           </h2>
 
           <p className="mt-2 max-w-2xl text-xs sm:text-sm text-gray-400">
             {!isLoggedIn
-              ? "You are previewing public frames. Sign in to unlock high-res travel albums, university memories, and funny mems."
-              : `Welcome, ${user?.name || "Abdullah"}! All ${photos.length} real album collections are unlocked.`}
+              ? "বর্তমানে আপনি উন্মুক্ত ফটোগ্রাফি ফ্রেমগুলো দেখছেন। ভ্রমণ, ক্যাম্পাস লাইফ ও অন্যান্য অ্যালবাম দেখতে লগইন করুন।"
+              : `স্বাগতম, ${user?.name || "Member"}! আপনার জন্য সকল কালেকশন এবং ছবি আপলোড ফিচার উন্মুক্ত রয়েছে।`}
           </p>
         </div>
 
@@ -78,7 +101,7 @@ export default function FeaturedPhotography() {
           href="/explore"
           className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-5 py-2 text-xs font-semibold text-purple-300 hover:bg-purple-600 hover:text-white transition-all self-start md:self-auto"
         >
-          <span>Explore All {photos.length} Photos</span>
+          <span>{isLoggedIn ? `Explore All (${photos.length})` : "Explore Gallery"}</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
@@ -97,7 +120,7 @@ export default function FeaturedPhotography() {
                   : "bg-[#121422] border border-white/10 text-gray-300 hover:border-purple-500/40 hover:text-white"
               }`}
             >
-              {cat}
+              {cat === "Photography" ? "Public Photography" : cat}
             </button>
           );
         })}
@@ -127,13 +150,10 @@ export default function FeaturedPhotography() {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-black/10 to-black/30" />
 
-                {/* Heart Button: Real toggle */}
+                {/* Heart Button */}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleLike(photo.id);
-                  }}
+                  onClick={(e) => handleLikeClick(e, photo.id)}
                   className={`absolute top-3.5 right-3.5 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md border transition-all ${
                     isLiked
                       ? "bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/30 scale-110"
@@ -176,31 +196,83 @@ export default function FeaturedPhotography() {
         })}
       </div>
 
-      {/* Guest Locked Albums Banner if not logged in */}
+      {/* Bangla Onboarding & Feature Explanation Banner for Visitors */}
       {!isLoggedIn && (
-        <div className="mt-12 rounded-3xl border border-white/10 bg-gradient-to-br from-[#16182c] to-[#0d0e17] p-8 text-center relative overflow-hidden">
-          <div className="relative z-10 max-w-xl mx-auto">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-600/20 text-purple-400 border border-purple-500/30 mb-4">
-              <Lock className="h-6 w-6" />
+        <div className="mt-14 rounded-3xl border border-purple-500/30 bg-gradient-to-br from-[#181432]/90 via-[#101124]/90 to-[#0c0d18]/95 p-6 sm:p-10 text-center relative overflow-hidden shadow-2xl backdrop-blur-2xl">
+          {/* Top ambient glow */}
+          <div className="absolute top-0 right-1/2 translate-x-1/2 w-96 h-36 bg-purple-600/20 blur-[100px] pointer-events-none rounded-full" />
+
+          <div className="relative z-10 max-w-3xl mx-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/20 border border-purple-500/40 px-4 py-1.5 text-xs font-semibold text-purple-200 mb-4 shadow-sm">
+              <Sparkles className="h-4 w-4 text-purple-300" />
+              <span>ফ্রেমওরা (Frameora) প্ল্যাটফর্মে আপনাকে স্বাগতম!</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white">
-              Unlock All 6 Private Collections
+
+            <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-snug">
+              সকল প্রিমিয়াম ফিচার ও প্রাইভেট অ্যালবাম আনলক করুন
             </h3>
-            <p className="mt-2 text-xs sm:text-sm text-gray-300 leading-relaxed">
-              Sign in to browse Sylhet & Tangail Travel, BUBT Campus, Golden Memories, and Funny Mems with the photographer community.
+
+            <p className="mt-3 text-xs sm:text-sm text-gray-300 leading-relaxed max-w-2xl mx-auto">
+              বর্তমানে আপনি ভিজিটর হিসেবে শুধুমাত্র উন্মুক্ত <strong className="text-purple-300">ফটোগ্রাফি</strong> সেকশনের ছবিগুলো উপভোগ করছেন। সিলেট ও টাঙ্গাইল ভ্রমণ, বিইউবিটি ক্যাম্পাস জীবন, গোল্ডেন মেমোরিজ এবং মেমস স্কোয়াডের শত শত এক্সক্লুসিভ ছবি দেখতে এবং নিজের ছবি আপলোড করতে নিচে থেকে খুব সহজেই <strong className="text-white">সাইন ইন</strong> অথবা <strong className="text-white">ফ্রি অ্যাকাউন্ট</strong> তৈরি করুন।
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+
+            {/* Feature Highlight Grid */}
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 mb-3">
+                  <FolderOpen className="h-5 w-5" />
+                </div>
+                <h4 className="text-xs font-bold text-white">৬টি প্রাইভেট অ্যালবাম</h4>
+                <p className="mt-1 text-[11px] text-gray-400 leading-relaxed">
+                  ট্রাভেল, ক্যাম্পাস, মেমোরিজ ও মেমস স্কোয়াডের শত শত ছবি আনলক হবে।
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/20 text-blue-300 border border-blue-500/30 mb-3">
+                  <UploadCloud className="h-5 w-5" />
+                </div>
+                <h4 className="text-xs font-bold text-white">ফটো আপলোড ও শেয়ার</h4>
+                <p className="mt-1 text-[11px] text-gray-400 leading-relaxed">
+                  আপনার নিজস্ব তোলা ছবি সরাসরি ক্লাউড সার্ভারে নিরাপদে সেভ করতে পারবেন।
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-600/20 text-rose-300 border border-rose-500/30 mb-3">
+                  <Heart className="h-5 w-5" />
+                </div>
+                <h4 className="text-xs font-bold text-white">পার্সোনাল ফেভারিট</h4>
+                <p className="mt-1 text-[11px] text-gray-400 leading-relaxed">
+                  পছন্দের মুহূর্তগুলোতে লাভ (❤️) দিয়ে নিজস্ব ফেভারিট কালেকশন সাজান।
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 mb-3">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <h4 className="text-xs font-bold text-white">নিরাপদ ও বিজ্ঞাপনমুক্ত</h4>
+                <p className="mt-1 text-[11px] text-gray-400 leading-relaxed">
+                  সম্পূর্ণ ফ্রেশ, ফাস্ট এবং উচ্চমানের ভিজ্যুয়াল স্টোরি এক্সপেরিয়েন্স।
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
               <Link
                 href="/signin"
-                className="rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all"
+                className="rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-3 text-xs sm:text-sm font-bold text-white shadow-xl shadow-purple-600/30 hover:brightness-110 hover:scale-[1.02] transition-all"
               >
-                Sign In to Unlock
+                লগইন করুন (Sign In)
               </Link>
               <Link
                 href="/signup"
-                className="rounded-full border border-white/10 bg-white/5 px-6 py-2.5 text-xs font-semibold text-gray-300 hover:bg-white/10"
+                className="rounded-full border border-white/15 bg-white/5 px-8 py-3 text-xs sm:text-sm font-semibold text-gray-200 hover:bg-white/10 hover:text-white transition-all"
               >
-                Create Account
+                ফ্রি অ্যাকাউন্ট তৈরি করুন
               </Link>
             </div>
           </div>

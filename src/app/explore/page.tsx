@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { Photo } from "@/types/photo";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
+import { useToast } from "@/context/ToastContext";
 import LightboxModal from "@/components/LightboxModal";
 import {
   Search,
@@ -24,6 +25,7 @@ function ExploreContent() {
   const initialTab = searchParams.get("tab");
   const { isLoggedIn, role } = useAuth();
   const { photos, favorites, isFavorite, toggleLike, getLikesCount, openUploadModal } = usePhotos();
+  const { toast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>(
@@ -95,10 +97,27 @@ function ExploreContent() {
 
   const handleCategorySelect = (catId: string, isMemberOnly?: boolean) => {
     if (isMemberOnly && !isLoggedIn) {
+      toast.warning("এই অ্যালবামটি দেখতে অনুগ্রহ করে লগইন বা সাইন আপ করুন।");
       setShowLockedModal(true);
       return;
     }
     setSelectedCategory(catId);
+  };
+
+  const handleLikePhoto = (e: React.MouseEvent, photoId: string) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      toast.warning("ছবি ফেভারিটে যুক্ত করতে অনুগ্রহ করে লগইন করুন!");
+      setShowLockedModal(true);
+      return;
+    }
+    const alreadyLiked = isFavorite(photoId);
+    toggleLike(photoId);
+    if (alreadyLiked) {
+      toast.info("ফেভারিট থেকে সরানো হয়েছে");
+    } else {
+      toast.success("❤️ ফেভারিটে যোগ করা হয়েছে!");
+    }
   };
 
   return (
@@ -242,10 +261,7 @@ function ExploreContent() {
                 {/* Top-Right Heart Button: REAL FAVORITE TOGGLE */}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleLike(photo.id);
-                  }}
+                  onClick={(e) => handleLikePhoto(e, photo.id)}
                   className={`absolute top-3.5 right-3.5 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md border transition-all ${
                     userHasLiked
                       ? "bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/30 scale-110"
@@ -324,30 +340,36 @@ function ExploreContent() {
         onNavigate={(idx) => setLightboxIndex(idx)}
       />
 
-      {/* Locked Feature Modal for Guests */}
+      {/* Locked Feature Modal for Visitors */}
       {showLockedModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
           <div className="w-full max-w-sm rounded-3xl border border-purple-500/30 bg-[#121422] p-6 shadow-2xl text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-600/20 text-purple-400 border border-purple-500/30 mb-4">
               <Lock className="h-6 w-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Member Exclusive</h3>
+            <h3 className="text-lg font-bold text-white">প্রাইভেট মেম্বার অ্যালবাম</h3>
             <p className="mt-2 text-xs text-gray-300 leading-relaxed">
-              BUBT Campus, funny mems, and private travel albums are available to registered members.
+              সিলেট ও টাঙ্গাইল ভ্রমণ, BUBT ক্যাম্পাস লাইফ এবং মেমোরিজ অ্যালবামগুলো দেখতে এবং ছবি ফেভারিট করতে অনুগ্রহ করে লগইন করুন।
             </p>
             <div className="mt-6 flex flex-col gap-2.5">
               <Link
                 href="/signin"
-                className="w-full rounded-xl bg-purple-600 py-2.5 text-xs font-semibold text-white hover:bg-purple-500"
+                className="w-full rounded-xl bg-purple-600 py-2.5 text-xs font-semibold text-white hover:bg-purple-500 shadow-md shadow-purple-600/30"
               >
-                Sign In Now
+                লগইন করুন (Sign In)
+              </Link>
+              <Link
+                href="/signup"
+                className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-semibold text-gray-300 hover:bg-white/10"
+              >
+                ফ্রি অ্যাকাউন্ট তৈরি করুন
               </Link>
               <button
                 type="button"
                 onClick={() => setShowLockedModal(false)}
-                className="w-full rounded-xl border border-white/10 py-2 text-xs text-gray-400 hover:text-white"
+                className="w-full rounded-xl border border-white/5 py-2 text-xs text-gray-400 hover:text-white"
               >
-                Close
+                বন্ধ করুন (Close)
               </button>
             </div>
           </div>
