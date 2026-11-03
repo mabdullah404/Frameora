@@ -17,6 +17,7 @@ import { Photo } from "@/types/photo";
 import { usePhotos } from "@/context/PhotoContext";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
+import UserAvatar from "./UserAvatar";
 
 interface LightboxModalProps {
   photos: Photo[];
@@ -231,14 +232,12 @@ export default function LightboxModal({
           
           {/* Photo Details & Photographer */}
           <div className="flex items-center gap-3.5">
-            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-purple-500/40">
-              <Image
-                src="/images/Abdullah/FB_IMG_1790540440153.jpg"
-                alt="Abdullah"
-                fill
-                className="object-cover"
-              />
-            </div>
+            <UserAvatar
+              src={currentPhoto.photographer === "Abdullah" || currentPhoto.photographer?.includes("Mamun") ? "/images/Abdullah/FB_IMG_1790540440153.jpg" : undefined}
+              name={currentPhoto.photographer || "Photographer"}
+              size="md"
+              className="border border-purple-500/40"
+            />
             <div>
               <h3 className="text-sm sm:text-base font-bold text-white line-clamp-1">
                 {currentPhoto.title}

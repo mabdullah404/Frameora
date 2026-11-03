@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera } from "lucide-react";
+import { Camera, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
@@ -14,6 +14,9 @@ export default function SignUpPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [notification, setNotification] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,17 +38,27 @@ export default function SignUpPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) {
-      toast.error("Please fill in all required fields.");
+    if (!name.trim() || !email.trim() || !password) {
+      toast.error("অনুগ্রহ করে সকল প্রয়োজনীয় তথ্য পূরণ করুন।");
       return;
     }
+    if (password.length < 6) {
+      toast.error("পাসওয়ার্ড ন্যূনতম ৬ অক্ষরের হতে হবে।");
+      return;
+    }
+    if (confirmPassword && password !== confirmPassword) {
+      toast.error("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!");
+      return;
+    }
+
     const isAdminAccount = email.toLowerCase().trim() === "mabdullah539629@gmail.com";
     login(isAdminAccount ? "admin" : "user", {
       name: name.trim(),
       email: email.trim(),
+      avatar: "", // NO automatic hardcoded image!
     });
-    toast.success("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! স্বাগতম ফ্রেমওরায়।");
-    router.push(isAdminAccount ? "/admin" : "/explore");
+    toast.success("🎉 অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! স্বাগতম ফ্রেমওরায়।");
+    router.push(isAdminAccount ? "/admin" : "/profile");
   };
 
   return (
@@ -130,14 +143,48 @@ export default function SignUpPage() {
 
           <div>
             <label className="block text-xs font-medium text-gray-300">Create Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-            />
+            <div className="relative mt-1.5">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-white/10 bg-white/5 pl-3.5 pr-10 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
+                title={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
+                aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-300">Confirm Password</label>
+            <div className="relative mt-1.5">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-white/10 bg-white/5 pl-3.5 pr-10 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
+                title={showConfirmPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
+                aria-label={showConfirmPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           <button

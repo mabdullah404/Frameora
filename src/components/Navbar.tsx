@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
 import { useToast } from "@/context/ToastContext";
 import UploadModal from "@/components/UploadModal";
+import UserAvatar from "@/components/UserAvatar";
 import {
   Camera,
   Search,
@@ -168,14 +169,12 @@ export default function Navbar() {
                   className="flex items-center gap-2 rounded-full p-0.5 hover:ring-2 hover:ring-purple-500/50 transition-all"
                   aria-label="User profile menu"
                 >
-                  <div className="relative h-9 w-9 overflow-hidden rounded-full border border-purple-500/40">
-                    <Image
-                      src={user?.avatar || "/images/Abdullah/FB_IMG_1790540440153.jpg"}
-                      alt={user?.name || "Avatar"}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+                  <UserAvatar
+                    src={user?.avatar}
+                    name={user?.name}
+                    size="sm"
+                    className="border border-purple-500/40"
+                  />
                 </button>
 
                 {isProfileOpen && (
@@ -267,6 +266,14 @@ export default function Navbar() {
 
               {isLoggedIn ? (
                 <>
+                  <div className="flex items-center gap-3 px-3 py-2 border-b border-white/[0.08] mb-1">
+                    <UserAvatar src={user?.avatar} name={user?.name} size="sm" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-white truncate">{user?.name}</p>
+                      <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
+                    </div>
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => {

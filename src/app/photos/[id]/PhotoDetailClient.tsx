@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
 import { useToast } from "@/context/ToastContext";
+import UserAvatar from "@/components/UserAvatar";
 import {
   ArrowLeft,
   Heart,
@@ -208,12 +209,19 @@ export default function PhotoDetailClient({ id }: { id: string }) {
                   </p>
 
                   <div className="mt-4 flex items-center gap-3">
-                    <div className="relative h-8 w-8 rounded-full overflow-hidden border border-purple-500/40">
-                      <Image src="/images/Abdullah/FB_IMG_1790540440153.jpg" alt="Abdullah" fill className="object-cover" />
-                    </div>
+                    <UserAvatar
+                      src={photo.photographer === "Abdullah" || photo.photographer?.includes("Mamun") ? "/images/Abdullah/FB_IMG_1790540440153.jpg" : undefined}
+                      name={photo.photographer || "Creator"}
+                      size="sm"
+                      className="border border-purple-500/40"
+                    />
                     <div>
-                      <p className="text-xs font-bold text-white">Md. Abdullah Al Mamun</p>
-                      <p className="text-[10px] text-purple-300">Original Photographer & Author</p>
+                      <p className="text-xs font-bold text-white">{photo.photographer || "Md. Abdullah Al Mamun"}</p>
+                      <p className="text-[10px] text-purple-300">
+                        {photo.photographer === "Abdullah" || photo.photographer?.includes("Mamun")
+                          ? "Original Photographer & Author"
+                          : "Frameora Community Contributor"}
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -16,17 +16,20 @@ import {
   Trash2,
   Download,
   ArrowRight,
-  Check,
   UploadCloud,
   UserPlus,
   UserCheck,
   ShieldCheck,
   Eye,
+  ExternalLink,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, AuthUser } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
 import { useToast } from "@/context/ToastContext";
 import LightboxModal from "@/components/LightboxModal";
+import UserAvatar from "@/components/UserAvatar";
+import ImageCropModal from "@/components/ImageCropModal";
+import ProfileEditModal from "@/components/ProfileEditModal";
 import type { Photo } from "@/types/photo";
 
 export default function ProfilePage() {
@@ -47,19 +50,13 @@ export default function ProfilePage() {
 
   const [activeTab, setActiveTab] = useState<"photos" | "albums" | "favorites" | "activity">("photos");
   const [isEditing, setIsEditing] = useState(false);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const isAdmin = role === "admin" && user?.email?.toLowerCase().trim() === "mabdullah539629@gmail.com";
 
-  // Profile edit form state
-  const [name, setName] = useState(user?.name || "Md. Abdullah Al Mamun");
-  const [bio, setBio] = useState(
-    user?.bio || (isAdmin ? "Creator of Frameora. Frontend & Full-Stack Developer." : "Photography explorer & memory collector.")
-  );
-
-  // Photos belonging strictly to this authenticated user:
-  // Admin sees all catalog photos, normal member sees their own uploads by email or id
+  // Photos belonging strictly to this authenticated user
   const myUploadedPhotos = isAdmin
     ? photos
     : photos.filter(
@@ -176,11 +173,31 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateProfile({ name, bio });
-    toast.success("✅ প্রোফাইল সফলভাবে আপডেট করা হয়েছে!");
-    setIsEditing(false);
+  // Handle avatar update from crop modal
+  const handleSaveAvatar = async (croppedDataUrl: string) => {
+    const ok = await updateProfile({ avatar: croppedDataUrl });
+    if (ok) {
+      toast.success("✨ প্রোফাইল ছবি সফলভাবে আপডেট ও সেভ হয়েছে!");
+    } else {
+      toast.error("প্রোফাইল ছবি সেভ করতে সমস্যা হয়েছে");
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    const ok = await updateProfile({ avatar: "" });
+    if (ok) {
+      toast.info("প্রোফাইল ছবি মুছে ফেলা হয়েছে (ডিফল্ট অবতার সক্রিয়)");
+    }
+  };
+
+  const handleSaveProfile = async (updated: Partial<AuthUser>): Promise<boolean> => {
+    const ok = await updateProfile(updated);
+    if (ok) {
+      toast.success("✅ প্রোফাইলের তথ্য সফলভাবে ডেটাবেজে সংরক্ষিত হয়েছে!");
+    } else {
+      toast.error("তথ্য সেভ করতে সমস্যা হয়েছে, অনুগ্রহ করে পুনরায় চেষ্টা করুন।");
+    }
+    return ok;
   };
 
   const handleFollowCreator = () => {
@@ -239,20 +256,18 @@ export default function ProfilePage() {
           {/* Avatar & User Details */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
             <div className="relative group">
-              <div className="relative h-28 w-28 sm:h-32 sm:w-32 overflow-hidden rounded-full border-4 border-purple-500/40 shadow-2xl ring-4 ring-black/40">
-                <Image
-                  src={user?.avatar || "/images/Abdullah/FB_IMG_1790540440153.jpg"}
-                  alt={user?.name || "Profile"}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
+              <UserAvatar
+                src={user?.avatar}
+                name={user?.name}
+                size="2xl"
+                priority
+                className="border-4 border-purple-500/40 shadow-2xl ring-4 ring-black/40"
+              />
               <button
                 type="button"
-                onClick={() => setIsEditing(true)}
+                onClick={() => setIsCropModalOpen(true)}
                 className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full bg-purple-600 text-white border-2 border-[#121422] shadow-lg hover:bg-purple-500 hover:scale-110 transition-all"
-                title="Edit Profile"
+                title="Change or Crop Profile Picture"
               >
                 <Camera className="h-4 w-4" />
               </button>
@@ -270,26 +285,96 @@ export default function ProfilePage() {
                 }`}>
                   {isAdmin ? "Admin / Owner" : "Member"}
                 </span>
+
+                {user?.experience && (
+                  <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+                    {user.experience}
+                  </span>
+                )}
               </div>
 
-              {/* Email Address */}
-              <div className="mt-1 flex items-center justify-center sm:justify-start gap-2 text-xs text-purple-300 font-medium">
-                <Mail className="h-3.5 w-3.5 text-purple-400" />
-                <span>{user?.email || "member@frameora.com"}</span>
+              {/* Email Address & Username */}
+              <div className="mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-purple-300 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5 text-purple-400" />
+                  <span>{user?.email || "member@frameora.com"}</span>
+                </span>
+                {user?.username && (
+                  <span className="text-gray-400">@{user.username}</span>
+                )}
               </div>
 
               <p className="mt-3 text-xs sm:text-sm text-gray-300 leading-relaxed">
-                {user?.bio || (isAdmin ? "Passionate photographer & visual curator." : "Photography explorer on Frameora.")}
+                {user?.bio || (isAdmin ? "Passionate photographer & visual curator. Preserving authentic landscapes." : "Photography explorer on Frameora.")}
               </p>
 
-              {/* Location & Meta */}
+              {/* Location, Photography category & Social Links */}
               <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-gray-400">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 text-purple-400" />
-                  <span>Dhaka, Bangladesh</span>
+                  <span>{user?.location || "Dhaka, Bangladesh"}</span>
                 </span>
+
+                {user?.favoriteCategory && (
+                  <span className="text-purple-300">
+                    Focus: <strong>{user.favoriteCategory}</strong>
+                  </span>
+                )}
+
+                {user?.website && (
+                  <a
+                    href={user.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-purple-400 hover:text-purple-300 underline"
+                  >
+                    <Globe className="h-3.5 w-3.5" />
+                    <span>Portfolio</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+
+                {/* Social icons if provided */}
+                {(user?.facebook || user?.instagram || user?.linkedin) && (
+                  <div className="flex items-center gap-2 pl-2 border-l border-white/10">
+                    {user.facebook && (
+                      <a
+                        href={user.facebook.startsWith("http") ? user.facebook : `https://${user.facebook}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-blue-400 text-xs font-bold"
+                        title="Facebook Profile"
+                      >
+                        FB
+                      </a>
+                    )}
+                    {user.instagram && (
+                      <a
+                        href={user.instagram.startsWith("http") ? user.instagram : `https://instagram.com/${user.instagram.replace("@", "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-pink-400 text-xs font-bold"
+                        title="Instagram Profile"
+                      >
+                        IG
+                      </a>
+                    )}
+                    {user.linkedin && (
+                      <a
+                        href={user.linkedin.startsWith("http") ? user.linkedin : `https://${user.linkedin}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-sky-400 text-xs font-bold"
+                        title="LinkedIn Profile"
+                      >
+                        IN
+                      </a>
+                    )}
+                  </div>
+                )}
+
                 {isAdmin && (
-                  <span className="flex items-center gap-1 text-purple-300">
+                  <span className="flex items-center gap-1 text-purple-300 font-semibold">
                     <ShieldCheck className="h-3.5 w-3.5" />
                     <span>Verified Owner</span>
                   </span>
@@ -298,7 +383,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Action Buttons: Upload Photo & Edit Bio */}
+          {/* Action Buttons: Upload Photo & Edit Profile */}
           <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end">
             
             <button
@@ -337,10 +422,10 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-gray-300 hover:bg-white/10 transition-all"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-gray-300 hover:bg-white/10 hover:border-purple-500/40 transition-all"
             >
-              <Edit3 className="h-3.5 w-3.5" />
-              <span>Edit Bio</span>
+              <Edit3 className="h-3.5 w-3.5 text-purple-400" />
+              <span>Edit Profile</span>
             </button>
           </div>
         </div>
@@ -526,7 +611,6 @@ export default function ProfilePage() {
 
                     {/* Action Bar: Privacy Toggle, Original Download, Delete */}
                     <div className="mt-4 pt-4 border-t border-white/[0.08] flex items-center justify-between gap-2">
-                      {/* Privacy Switch Button */}
                       <button
                         type="button"
                         onClick={() => handleTogglePrivacy(photo)}
@@ -551,7 +635,6 @@ export default function ProfilePage() {
                       </button>
 
                       <div className="flex items-center gap-1.5">
-                        {/* Download Original Quality */}
                         <button
                           type="button"
                           onClick={() => handleDownloadOriginal(photo)}
@@ -561,7 +644,6 @@ export default function ProfilePage() {
                           <Download className="h-3.5 w-3.5" />
                         </button>
 
-                        {/* Delete Frame */}
                         <button
                           type="button"
                           onClick={() => handleDeletePhoto(photo)}
@@ -758,52 +840,24 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Edit Profile Modal */}
-      {isEditing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#121422] p-6 shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-4">Edit Profile</h3>
-            <form onSubmit={handleSaveProfile} className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-gray-300">Display Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2 text-sm text-white focus:border-purple-500 focus:outline-none"
-                />
-              </div>
+      {/* Profile Edit Modal */}
+      <ProfileEditModal
+        isOpen={isEditing}
+        user={user}
+        onClose={() => setIsEditing(false)}
+        onOpenCropModal={() => setIsCropModalOpen(true)}
+        onSave={handleSaveProfile}
+      />
 
-              <div>
-                <label className="text-xs font-semibold text-gray-300">Bio</label>
-                <textarea
-                  value={bio}
-                  rows={3}
-                  onChange={(e) => setBio(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2 text-sm text-white focus:border-purple-500 focus:outline-none resize-none"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="rounded-xl border border-white/10 px-4 py-2 text-xs font-medium text-gray-300 hover:bg-white/5"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-5 py-2 text-xs font-semibold text-white hover:bg-purple-500 shadow-md shadow-purple-600/30"
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  <span>Save Changes</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Image Crop & Upload Modal */}
+      <ImageCropModal
+        isOpen={isCropModalOpen}
+        currentAvatar={user?.avatar}
+        userName={user?.name}
+        onClose={() => setIsCropModalOpen(false)}
+        onSave={handleSaveAvatar}
+        onRemove={handleRemoveAvatar}
+      />
 
       {/* Lightbox Modal */}
       <LightboxModal
