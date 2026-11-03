@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import photosRaw from "@/data/photos.json";
 import { Photo } from "@/types/photo";
 
@@ -23,7 +30,7 @@ export interface PendingSubmission {
   status: "pending" | "approved" | "rejected";
 }
 
-interface UploadPhotoPayload {
+export interface UploadPhotoPayload {
   title: string;
   category: string;
   image: string;
@@ -31,6 +38,8 @@ interface UploadPhotoPayload {
   location?: string;
   description?: string;
   uploaderId?: string;
+  uploaderEmail?: string;
+  isPrivate?: boolean;
 }
 
 interface PhotoContextType {
@@ -46,6 +55,7 @@ interface PhotoContextType {
   approveSubmission: (submissionId: string) => void;
   rejectSubmission: (submissionId: string, reason?: string) => void;
   uploadPhoto: (payload: UploadPhotoPayload) => Promise<Photo>;
+  updatePhotoPrivacy: (photoId: string, isPrivate: boolean) => Promise<boolean>;
   isUploadModalOpen: boolean;
   openUploadModal: () => void;
   closeUploadModal: () => void;
@@ -68,6 +78,7 @@ const PhotoContext = createContext<PhotoContextType>({
   approveSubmission: () => {},
   rejectSubmission: () => {},
   uploadPhoto: async () => initialValidPhotos[0],
+  updatePhotoPrivacy: async () => false,
   isUploadModalOpen: false,
   openUploadModal: () => {},
   closeUploadModal: () => {},
@@ -139,6 +150,9 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
             location: p.location || "Bangladesh",
             description: p.description || "",
             uploaderId: p.uploaderId,
+            uploaderEmail: p.uploaderEmail,
+            isPrivate: Boolean(p.isPrivate),
+            createdAt: p.createdAt,
           }));
 
           setPhotos((prev) => {
@@ -149,7 +163,7 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => {
-        // MongoDB fallback to local state
+        // Fallback to local catalog
       });
 
     // 2. Load favorites
@@ -181,6 +195,7 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
 
   // Upload photo to MongoDB backend
   const uploadPhoto = async (payload: UploadPhotoPayload): Promise<Photo> => {
+    const isPriv = Boolean(payload.isPrivate);
     try {
       const response = await fetch("/api/photos", {
         method: "POST",
@@ -203,6 +218,9 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
         location: data.photo.location || payload.location || "Bangladesh",
         description: data.photo.description || payload.description || "",
         uploaderId: data.photo.uploaderId || payload.uploaderId,
+        uploaderEmail: data.photo.uploaderEmail || payload.uploaderEmail,
+        isPrivate: isPriv,
+        createdAt: data.photo.createdAt || new Date(),
       };
 
       // Add to front of live gallery
@@ -221,9 +239,30 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
         location: payload.location || "Bangladesh",
         description: payload.description || "",
         uploaderId: payload.uploaderId,
+        uploaderEmail: payload.uploaderEmail,
+        isPrivate: isPriv,
+        createdAt: new Date(),
       };
       setPhotos((prev) => [fallbackPhoto, ...prev]);
       return fallbackPhoto;
+    }
+  };
+
+  const updatePhotoPrivacy = async (photoId: string, isPrivate: boolean): Promise<boolean> => {
+    setPhotos((prev) =>
+      prev.map((p) => (p.id === photoId ? { ...p, isPrivate } : p))
+    );
+
+    try {
+      const res = await fetch("/api/photos", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: photoId, isPrivate }),
+      });
+      const data = await res.json();
+      return Boolean(data.success);
+    } catch {
+      return false;
     }
   };
 
@@ -301,6 +340,8 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
       image: item.image,
       location: item.location || "Bangladesh",
       description: item.description,
+      isPrivate: false,
+      createdAt: new Date(),
     };
 
     setPhotos((prev) => [newPhoto, ...prev]);
@@ -350,6 +391,7 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
       approveSubmission,
       rejectSubmission,
       uploadPhoto,
+      updatePhotoPrivacy,
       isUploadModalOpen,
       openUploadModal,
       closeUploadModal,
@@ -371,6 +413,7 @@ export function PhotoProvider({ children }: { children: React.ReactNode }) {
       approveSubmission,
       rejectSubmission,
       uploadPhoto,
+      updatePhotoPrivacy,
       isUploadModalOpen,
       openUploadModal,
       closeUploadModal,

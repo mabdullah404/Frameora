@@ -9,4 +9,8 @@ export type Photo = {
   description: string;
   funTag?: string;
   uploaderId?: string;
+  uploaderEmail?: string;
+  isPrivate?: boolean;
+  createdAt?: string | Date;
+  likesCount?: number;
 };

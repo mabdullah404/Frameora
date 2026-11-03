@@ -12,6 +12,8 @@ import {
   AlertCircle,
   FileText,
   Sparkles,
+  Globe,
+  Lock,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
@@ -31,6 +33,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   const [category, setCategory] = useState("Nature");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -49,8 +52,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError("Image size exceeds 10MB limit");
+    if (file.size > 15 * 1024 * 1024) {
+      setError("Image size exceeds 15MB limit");
       return;
     }
 
@@ -81,14 +84,20 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         title: title.trim(),
         category,
         image: imagePreview,
-        photographer: user?.name || "Abdullah",
+        photographer: user?.name || "Member",
         location: location.trim() || "Bangladesh",
         description: description.trim(),
-        uploaderId: user?.id || "user-abdullah",
+        uploaderId: user?.id || `user-${Date.now()}`,
+        uploaderEmail: user?.email || "",
+        isPrivate: Boolean(isPrivate),
       });
 
       setSuccess(true);
-      toast.success("🎉 ছবি সফলভাবে আপলোড সম্পন্ন হয়েছে!");
+      toast.success(
+        isPrivate
+          ? "🔒 প্রাইভেট ছবি সফলভাবে আপলোড সম্পন্ন হয়েছে! এটি শুধু আপনার প্রোফাইলে থাকবে।"
+          : "🎉 পাবলিক ছবি সফলভাবে আপলোড সম্পন্ন হয়েছে! এক্সপ্লোরে সবাই দেখতে পাবে।"
+      );
       setTimeout(() => {
         setSuccess(false);
         onClose();
@@ -96,6 +105,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         setTitle("");
         setLocation("");
         setDescription("");
+        setIsPrivate(false);
         setImagePreview(null);
       }, 1200);
     } catch (err: any) {
@@ -109,7 +119,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-[#121422] p-6 sm:p-8 shadow-2xl">
+      <div className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-[#121422] p-6 sm:p-8 shadow-2xl my-8">
         
         {/* Close Button */}
         <button
@@ -128,7 +138,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           <div>
             <h2 className="text-xl font-bold text-white">Upload New Photo</h2>
             <p className="text-xs text-gray-400">
-              Share your frame with the community and save directly to MongoDB
+              Preserve your authentic frames with full original resolution
             </p>
           </div>
         </div>
@@ -143,7 +153,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
         {success && (
           <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300 flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
-            <span>Photo successfully uploaded and published live to MongoDB!</span>
+            <span>Photo successfully saved to MongoDB in original quality!</span>
           </div>
         )}
 
@@ -156,7 +166,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
             </label>
 
             {imagePreview ? (
-              <div className="relative h-52 w-full rounded-2xl overflow-hidden border border-purple-500/40 group">
+              <div className="relative h-48 w-full rounded-2xl overflow-hidden border border-purple-500/40 group">
                 <Image
                   src={imagePreview}
                   alt="Preview"
@@ -193,7 +203,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                     Click to browse or drag and drop an image
                   </p>
                   <p className="text-[10px] text-gray-400 mt-0.5">
-                    Supports JPG, PNG, WebP up to 10MB
+                    Original uncompressed resolution preserved (JPG, PNG, WebP)
                   </p>
                 </div>
               </div>
@@ -208,6 +218,50 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
             />
           </div>
 
+          {/* Privacy Toggle: Public vs Private */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+              Privacy Settings <span className="text-rose-400">*</span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={() => setIsPrivate(false)}
+                className={`flex items-start gap-2.5 rounded-xl border p-3 text-left transition-all ${
+                  !isPrivate
+                    ? "border-emerald-500/60 bg-emerald-500/15 text-white ring-1 ring-emerald-500/40"
+                    : "border-white/10 bg-white/[0.03] text-gray-400 hover:border-white/20"
+                }`}
+              >
+                <Globe className={`h-4 w-4 mt-0.5 shrink-0 ${!isPrivate ? "text-emerald-400" : "text-gray-400"}`} />
+                <div>
+                  <p className="text-xs font-bold text-white">Public (উন্মুক্ত)</p>
+                  <p className="text-[10px] text-gray-300 mt-0.5 leading-tight">
+                    Explore গ্যালারিতে সবার জন্য দৃশ্যমান ও মূল কোয়ালিটিতে ডাউনলোডযোগ্য।
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsPrivate(true)}
+                className={`flex items-start gap-2.5 rounded-xl border p-3 text-left transition-all ${
+                  isPrivate
+                    ? "border-purple-500/60 bg-purple-500/20 text-white ring-1 ring-purple-500/40"
+                    : "border-white/10 bg-white/[0.03] text-gray-400 hover:border-white/20"
+                }`}
+              >
+                <Lock className={`h-4 w-4 mt-0.5 shrink-0 ${isPrivate ? "text-purple-400" : "text-gray-400"}`} />
+                <div>
+                  <p className="text-xs font-bold text-white">Private (ব্যক্তিগত)</p>
+                  <p className="text-[10px] text-gray-300 mt-0.5 leading-tight">
+                    শুধুমাত্র আপনার ব্যক্তিগত প্রোফাইলে থাকবে। অন্য কেউ দেখতে বা ডাউনলোড করতে পারবে না।
+                  </p>
+                </div>
+              </button>
+            </div>
+          </div>
+
           {/* Title Input */}
           <div>
             <label className="block text-xs font-semibold text-gray-300 mb-1">
@@ -218,7 +272,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               <input
                 type="text"
                 required
-                placeholder="e.g. Misty Sunrise over Hills"
+                placeholder="e.g. Misty Sunrise over Sylhet Hills"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-[#181a2b] pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"

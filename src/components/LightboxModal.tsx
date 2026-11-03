@@ -90,6 +90,36 @@ export default function LightboxModal({
     }
   };
 
+  const handleDownloadOriginal = async () => {
+    if (!currentPhoto) return;
+    if (!isLoggedIn) {
+      toast.warning("ছবি ডাউনলোড করতে অনুগ্রহ করে লগইন করুন!");
+      return;
+    }
+    toast.info("মূল কোয়ালিটিতে ছবি ডাউনলোড শুরু হচ্ছে...");
+    try {
+      const res = await fetch(currentPhoto.image);
+      const blob = await res.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      const ext = currentPhoto.image.split(".").pop()?.split("?")[0] || "jpg";
+      const filename = `${currentPhoto.title.replace(/[^a-zA-Z0-9_-]/g, "_")}_original.${ext}`;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      toast.success("✅ মূল কোয়ালিটির ছবি ডাউনলোড সম্পন্ন হয়েছে!");
+    } catch {
+      const link = document.createElement("a");
+      link.href = currentPhoto.image;
+      link.download = `${currentPhoto.title}_original.jpg`;
+      link.target = "_blank";
+      link.click();
+    }
+  };
+
   const handleLike = () => {
     if (!currentPhoto) return;
     if (!isLoggedIn) {
@@ -140,16 +170,14 @@ export default function LightboxModal({
             {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </button>
 
-          <a
-            href={currentPhoto.image}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10"
-            title="Download Original"
+          <button
+            type="button"
+            onClick={handleDownloadOriginal}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-purple-600 transition-all border border-white/10"
+            title="Download Original Quality"
           >
             <Download className="h-4 w-4" />
-          </a>
+          </button>
 
           <button
             type="button"

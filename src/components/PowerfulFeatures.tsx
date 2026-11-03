@@ -150,18 +150,19 @@ export default function PowerfulFeatures() {
           })}
         </div>
 
-        {/* Right Card: AI Futuristic Camera Lens Visual with "Capture Share Inspire" */}
+        {/* Right Card: High-Resolution Aesthetic Natural Landscape Photography with "Capture Share Inspire" */}
         <div className="lg:col-span-4 relative rounded-3xl overflow-hidden border border-white/10 min-h-[480px] flex flex-col justify-between p-7 bg-gradient-to-b from-[#151728] to-[#0a0b12]">
-          {/* Background Image: AI Automation Creative Visual */}
+          {/* Background Image: Authentic Natural Landscape Photograph */}
           <Image
-            src="/images/ai-creative-lens.jpg"
-            alt="AI Digital Lens Capture Share Inspire"
+            src="/images/aesthetic-nature-sanctuary.jpg"
+            alt="Aesthetic Mountain Sunrise and Natural Landscape Sanctuary"
             fill
             sizes="(max-width: 1024px) 100vw, 33vw"
-            className="object-cover opacity-60 transition-transform duration-700 hover:scale-105"
+            className="object-cover opacity-70 transition-transform duration-700 hover:scale-105"
+            priority
           />
           {/* Dark purple gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10]/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10]/40 to-black/20" />
 
           {/* Top Floating Badge with handwritten style feel */}
           <div className="relative z-10 flex justify-end">

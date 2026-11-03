@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Sparkles } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
@@ -14,36 +14,37 @@ export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notification, setNotification] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleAuth = async () => {
-    setNotification("Redirecting to Google Sign-In via MongoDB...");
+    setNotification("Redirecting to Google Sign-In...");
+    setIsLoading(true);
     try {
       const { signIn } = await import("@/lib/auth-client");
       await signIn.social({
         provider: "google",
         callbackURL: "/explore",
       });
-    } catch {
-      // Demo fallback if Google OAuth callback is pending domain authorization
-      login("admin");
-      setTimeout(() => {
-        router.push("/explore");
-      }, 500);
+    } catch (err: any) {
+      setIsLoading(false);
+      setNotification("");
+      toast.error("Google Sign-In failed. Please check your connection.");
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const roleChoice = email.includes("admin") ? "admin" : "user";
-    login(roleChoice);
-    toast.success("সফলভাবে লগইন হয়েছে! সকল অ্যালবাম আনলক করা হয়েছে।");
-    router.push("/explore");
-  };
-
-  const handleQuickDemo = (roleChoice: "user" | "admin") => {
-    login(roleChoice);
-    toast.success(roleChoice === "admin" ? "অ্যাডমিন প্যানেল আনলক হয়েছে!" : "মেম্বার অ্যাক্সেস আনলক হয়েছে!");
-    router.push(roleChoice === "admin" ? "/admin" : "/explore");
+    if (!email.trim()) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+    const isAdminAccount = email.toLowerCase().trim() === "mabdullah539629@gmail.com";
+    login(isAdminAccount ? "admin" : "user", {
+      email: email.trim(),
+      name: isAdminAccount ? "Md. Abdullah Al Mamun" : email.split("@")[0],
+    });
+    toast.success(isAdminAccount ? "অ্যাডমিন হিসেবে লগইন সফল হয়েছে!" : "সফলভাবে লগইন হয়েছে! স্বাগতম ফ্রেমওরায়।");
+    router.push(isAdminAccount ? "/admin" : "/explore");
   };
 
   return (
@@ -65,7 +66,7 @@ export default function SignInPage() {
           </Link>
           <h1 className="mt-4 text-2xl font-black text-white sm:text-3xl">Welcome Back</h1>
           <p className="mt-1.5 text-xs text-gray-300">
-            Sign in to access exclusive photo collections, albums, and creator tools.
+            Sign in to access exclusive photo collections, private albums, and full-resolution downloads.
           </p>
         </div>
 
@@ -75,36 +76,13 @@ export default function SignInPage() {
           </div>
         )}
 
-        {/* 1-Click Quick Demo Switchers */}
-        <div className="mt-6 p-3 rounded-2xl border border-purple-500/20 bg-purple-950/20 text-center">
-          <p className="text-[11px] font-semibold text-purple-300 flex items-center justify-center gap-1">
-            <Sparkles className="h-3 w-3" />
-            <span>Instant Demo Sign-In (No Password Needed)</span>
-          </p>
-          <div className="mt-2.5 grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickDemo("user")}
-              className="rounded-xl border border-blue-500/30 bg-blue-500/10 py-2 text-xs font-semibold text-blue-300 hover:bg-blue-500/20 transition-all"
-            >
-              Sign In as Member
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo("admin")}
-              className="rounded-xl border border-purple-500/40 bg-purple-600/20 py-2 text-xs font-semibold text-purple-300 hover:bg-purple-600/30 transition-all shadow-sm"
-            >
-              Sign In as Admin
-            </button>
-          </div>
-        </div>
-
-        {/* Social Authentication: Google ONLY */}
-        <div className="mt-5">
+        {/* Social Authentication: Google */}
+        <div className="mt-6">
           <button
             type="button"
+            disabled={isLoading}
             onClick={handleGoogleAuth}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-white transition-all hover:bg-white/10 hover:border-purple-500/40 hover:scale-[1.01]"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-white transition-all hover:bg-white/10 hover:border-purple-500/40 hover:scale-[1.01] disabled:opacity-50"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -124,7 +102,7 @@ export default function SignInPage() {
           </span>
         </div>
 
-        {/* Form */}
+        {/* Email/Password Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-gray-300">Email Address</label>
@@ -134,34 +112,39 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-300">Password</label>
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-medium text-gray-300">Password</label>
+              <Link href="#" className="text-[11px] text-purple-400 hover:text-purple-300">
+                Forgot password?
+              </Link>
+            </div>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all"
+            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all hover:scale-[1.01]"
           >
-            Sign In
+            Sign In to Frameora
           </button>
         </form>
 
         <p className="mt-6 text-center text-xs text-gray-400">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-purple-400 hover:underline font-semibold">
-            Create an Account
+          <Link href="/signup" className="font-semibold text-purple-400 hover:text-purple-300">
+            Create account
           </Link>
         </p>
       </div>

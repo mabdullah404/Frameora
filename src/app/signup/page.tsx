@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Sparkles } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
@@ -15,28 +15,37 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notification, setNotification] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleAuth = async () => {
-    setNotification("Redirecting to Google Sign-Up via MongoDB...");
+    setNotification("Connecting to Google Authentication...");
+    setIsLoading(true);
     try {
       const { signIn } = await import("@/lib/auth-client");
       await signIn.social({
         provider: "google",
         callbackURL: "/explore",
       });
-    } catch {
-      login("user");
-      setTimeout(() => {
-        router.push("/explore");
-      }, 500);
+    } catch (err: any) {
+      setIsLoading(false);
+      setNotification("");
+      toast.error("Google Sign-Up failed. Please check connection.");
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login("user");
+    if (!name.trim() || !email.trim()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    const isAdminAccount = email.toLowerCase().trim() === "mabdullah539629@gmail.com";
+    login(isAdminAccount ? "admin" : "user", {
+      name: name.trim(),
+      email: email.trim(),
+    });
     toast.success("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! স্বাগতম ফ্রেমওরায়।");
-    router.push("/explore");
+    router.push(isAdminAccount ? "/admin" : "/explore");
   };
 
   return (
@@ -67,31 +76,13 @@ export default function SignUpPage() {
           </div>
         )}
 
-        {/* 1-Click Instant Register */}
-        <div className="mt-6 p-3 rounded-2xl border border-purple-500/20 bg-purple-950/20 text-center">
-          <p className="text-[11px] font-semibold text-purple-300 flex items-center justify-center gap-1">
-            <Sparkles className="h-3 w-3" />
-            <span>Instant Demo Registration</span>
-          </p>
+        {/* Social Authentication: Google */}
+        <div className="mt-6">
           <button
             type="button"
-            onClick={() => {
-              login("user");
-              toast.success("মেম্বার রেজিস্ট্রেশন সফল হয়েছে! স্বাগতম।");
-              router.push("/explore");
-            }}
-            className="mt-2.5 w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-2.5 text-xs font-bold text-white shadow-md shadow-purple-600/30 hover:brightness-110"
-          >
-            1-Click Instant Member Register
-          </button>
-        </div>
-
-        {/* Social Authentication: Google ONLY (GitHub removed as requested) */}
-        <div className="mt-5">
-          <button
-            type="button"
+            disabled={isLoading}
             onClick={handleGoogleAuth}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-white transition-all hover:bg-white/10 hover:border-purple-500/40 hover:scale-[1.01]"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-white transition-all hover:bg-white/10 hover:border-purple-500/40 hover:scale-[1.01] disabled:opacity-50"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -120,8 +111,8 @@ export default function SignUpPage() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Abdullah"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
+              placeholder="Your Name"
+              className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
@@ -133,34 +124,34 @@ export default function SignUpPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-300">Password</label>
+            <label className="block text-xs font-medium text-gray-300">Create Password</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="mt-1 w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all"
+            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all hover:scale-[1.01]"
           >
-            Create Account
+            Create Free Account
           </button>
         </form>
 
         <p className="mt-6 text-center text-xs text-gray-400">
           Already have an account?{" "}
-          <Link href="/signin" className="text-purple-400 hover:underline font-semibold">
-            Sign In
+          <Link href="/signin" className="font-semibold text-purple-400 hover:text-purple-300">
+            Sign in
           </Link>
         </p>
       </div>

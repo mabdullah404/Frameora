@@ -23,7 +23,7 @@ import {
 function ExploreContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab");
-  const { isLoggedIn, role } = useAuth();
+  const { isLoggedIn, user, role } = useAuth();
   const { photos, favorites, isFavorite, toggleLike, getLikesCount, openUploadModal } = usePhotos();
   const { toast } = useToast();
 
@@ -49,16 +49,24 @@ function ExploreContent() {
     { id: "Others", label: "Others", emoji: "🔲" },
   ];
 
-  // Filter accessible photos based on auth status
+  // Filter accessible photos based on auth status and strict privacy
   const accessiblePhotos = useMemo(() => {
+    // Exclude any private photo from public explore unless it belongs to the viewing uploader
+    const publicOrOwn = photos.filter((p) => {
+      if (!p.isPrivate) return true;
+      if (isLoggedIn && user?.email && p.uploaderEmail?.toLowerCase() === user.email.toLowerCase()) return true;
+      if (isLoggedIn && user?.id && p.uploaderId === user.id) return true;
+      return false;
+    });
+
     if (!isLoggedIn) {
       // Unauthenticated visitors strictly see public photography & nature
-      return photos.filter(
+      return publicOrOwn.filter(
         (p) => p.folder === "Photography" || p.category === "Photography" || p.category === "Nature"
       );
     }
-    return photos;
-  }, [photos, isLoggedIn]);
+    return publicOrOwn;
+  }, [photos, isLoggedIn, user]);
 
   // Filtered photos based on search and category
   const filteredPhotos = useMemo(() => {

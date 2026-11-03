@@ -73,6 +73,35 @@ export default function PhotoDetailClient({ id }: { id: string }) {
     }
   };
 
+  const handleDownloadOriginal = async () => {
+    if (!isLoggedIn) {
+      toast.warning("ছবি ডাউনলোড করতে অনুগ্রহ করে লগইন করুন!");
+      return;
+    }
+    toast.info("মূল কোয়ালিটিতে ছবি ডাউনলোড শুরু হচ্ছে...");
+    try {
+      const res = await fetch(photo.image);
+      const blob = await res.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      const ext = photo.image.split(".").pop()?.split("?")[0] || "jpg";
+      const filename = `${photo.title.replace(/[^a-zA-Z0-9_-]/g, "_")}_original.${ext}`;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      toast.success("✅ মূল কোয়ালিটির ছবি ডাউনলোড সম্পন্ন হয়েছে!");
+    } catch {
+      const link = document.createElement("a");
+      link.href = photo.image;
+      link.download = `${photo.title}_original.jpg`;
+      link.target = "_blank";
+      link.click();
+    }
+  };
+
   const userHasLiked = isFavorite(photo.id);
   const currentLikes = getLikesCount(photo.id);
 
@@ -223,16 +252,14 @@ export default function PhotoDetailClient({ id }: { id: string }) {
                     )}
                   </button>
 
-                  <a
-                    href={photo.image}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-purple-600/30 hover:bg-purple-500"
+                  <button
+                    type="button"
+                    onClick={handleDownloadOriginal}
+                    className="flex items-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-purple-600/30 hover:bg-purple-500 transition-all hover:scale-105"
                   >
                     <Download className="h-4 w-4" />
-                    <span>Download</span>
-                  </a>
+                    <span>Download Original</span>
+                  </button>
                 </div>
               </div>
 

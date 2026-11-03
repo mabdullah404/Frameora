@@ -51,7 +51,7 @@ interface MockUser {
 }
 
 export default function AdminPage() {
-  const { user, role, setRole, logout } = useAuth();
+  const { user, role, logout } = useAuth();
   const {
     photos,
     removePhoto,
@@ -67,6 +67,8 @@ export default function AdminPage() {
   const [timeRange, setTimeRange] = useState("Last 30 Days");
   const [photoSearch, setPhotoSearch] = useState("");
   const [notification, setNotification] = useState("");
+
+  const isOwner = user?.email?.toLowerCase().trim() === "mabdullah539629@gmail.com";
 
   // Manage Users state
   const [usersList, setUsersList] = useState<MockUser[]>([
@@ -130,31 +132,38 @@ export default function AdminPage() {
   const [requireApproval, setRequireApproval] = useState(true);
   const [publicGuestView, setPublicGuestView] = useState(true);
 
-  // If role is not admin, show restricted view with 1-click switch
-  if (role !== "admin") {
+  // If not the verified owner, strictly deny access with 403 Forbidden
+  if (!isOwner) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4 py-16">
-        <div className="max-w-md w-full rounded-3xl border border-white/10 bg-[#121422]/90 p-8 text-center backdrop-blur-2xl shadow-2xl">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-600/20 text-purple-400 border border-purple-500/30 mb-6">
+        <div className="max-w-md w-full rounded-3xl border border-rose-500/30 bg-[#121422]/95 p-8 text-center backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-1/2 translate-x-1/2 w-48 h-24 bg-rose-600/10 blur-[60px] pointer-events-none rounded-full" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 mb-6">
             <ShieldAlert className="h-8 w-8" />
           </div>
-          <h2 className="text-2xl font-bold text-white">Admin Privileges Required</h2>
-          <p className="mt-2 text-sm text-gray-300 leading-relaxed">
-            You are currently signed in as a <strong className="text-purple-300 capitalize">{role}</strong>. Only administrators can access the 8-module management suite.
+          <h2 className="text-2xl font-bold text-white">403 — Access Denied</h2>
+          <p className="mt-2 text-xs sm:text-sm text-gray-300 leading-relaxed">
+            এই অ্যাডমিন প্যানেলটি শুধুমাত্র প্ল্যাটফর্ম ওনারের জন্য সংরক্ষিত।
+            <br />
+            <span className="text-purple-300 font-semibold">Authorized Admin: mabdullah539629@gmail.com</span>
+          </p>
+          <p className="mt-2 text-xs text-rose-300/80">
+            {user?.email
+              ? `Signed in as: ${user.email} (Unauthorized)`
+              : "You are not signed in as the authorized administrator."}
           </p>
           <div className="mt-6 flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={() => setRole("admin")}
-              className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all"
-            >
-              ⚡ Switch to Admin Role (1-Click Demo)
-            </button>
             <Link
               href="/"
-              className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/10"
+              className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all text-center"
             >
-              Return to Home
+              Return to Public Gallery
+            </Link>
+            <Link
+              href="/signin"
+              className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/10 text-center"
+            >
+              Sign In with Admin Account
             </Link>
           </div>
         </div>

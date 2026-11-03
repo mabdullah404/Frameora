@@ -1,10 +1,17 @@
 import { createAuthClient } from "better-auth/react";
 
+const getClientBaseURL = () => {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
+    return "https://frameora-delta.vercel.app";
+  }
+  return process.env.BETTER_AUTH_URL || "http://localhost:3000";
+};
+
 export const authClient = createAuthClient({
-  baseURL:
-    typeof window !== "undefined"
-      ? window.location.origin
-      : (process.env.BETTER_AUTH_URL || "https://frameora-delta.vercel.app"),
+  baseURL: getClientBaseURL(),
 });
 
 export const { signIn, signUp, useSession, signOut } = authClient;
