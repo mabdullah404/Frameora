@@ -50,29 +50,29 @@ export default function SignInPage() {
 
   return (
     <div className="flex min-h-[85vh] items-center justify-center px-4 py-12 sm:px-6">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#121422]/90 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+      <div className="w-full max-w-md rounded-3xl border border-black/[0.08] dark:border-white/10 bg-white dark:bg-[#121422]/90 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
         
         {/* Ambient Top Glow */}
-        <div className="absolute top-0 right-1/2 translate-x-1/2 w-48 h-24 bg-purple-600/20 blur-[60px] pointer-events-none rounded-full" />
+        <div className="absolute top-0 right-1/2 translate-x-1/2 w-48 h-24 bg-purple-600/15 blur-[60px] pointer-events-none rounded-full" />
 
         {/* Brand Header */}
         <div className="text-center relative z-10">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white shadow-lg shadow-purple-600/30">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white shadow-lg shadow-purple-600/30 keep-white">
               <Camera className="h-5 w-5" />
             </div>
-            <span className="text-2xl font-black tracking-tight text-white">
-              Frame<span className="text-purple-400">ora</span>
+            <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+              Frame<span className="text-purple-600 dark:text-purple-400">ora</span>
             </span>
           </Link>
-          <h1 className="mt-4 text-2xl font-black text-white sm:text-3xl">Welcome Back</h1>
-          <p className="mt-1.5 text-xs text-gray-300">
+          <h1 className="mt-4 text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">Welcome Back</h1>
+          <p className="mt-1.5 text-xs text-slate-600 dark:text-gray-300">
             Sign in to access exclusive photo collections, private albums, and full-resolution downloads.
           </p>
         </div>
 
         {notification && (
-          <div className="mt-5 rounded-xl border border-purple-500/30 bg-purple-600/10 p-3 text-center text-xs font-semibold text-purple-300">
+          <div className="mt-5 rounded-xl border border-purple-300 dark:border-purple-500/30 bg-purple-50 dark:bg-purple-600/10 p-3 text-center text-xs font-semibold text-purple-900 dark:text-purple-300">
             {notification}
           </div>
         )}
@@ -83,7 +83,7 @@ export default function SignInPage() {
             type="button"
             disabled={isLoading}
             onClick={handleGoogleAuth}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-white transition-all hover:bg-white/10 hover:border-purple-500/40 hover:scale-[1.01] disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 py-3 text-xs font-semibold text-slate-800 dark:text-white transition-all hover:bg-slate-100 dark:hover:bg-white/10 hover:border-purple-500/40 hover:scale-[1.01] disabled:opacity-50 shadow-sm"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -97,8 +97,8 @@ export default function SignInPage() {
 
         {/* Separator */}
         <div className="relative my-6 flex items-center justify-center">
-          <div className="w-full border-t border-white/[0.08]" />
-          <span className="absolute bg-[#121422] px-3 text-[11px] uppercase tracking-wider text-gray-500">
+          <div className="w-full border-t border-slate-200 dark:border-white/[0.08]" />
+          <span className="absolute bg-white dark:bg-[#121422] px-3 text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-500">
             or with email
           </span>
         </div>
@@ -106,21 +106,21 @@ export default function SignInPage() {
         {/* Email/Password Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-300">Email Address</label>
+            <label className="block text-xs font-medium text-slate-700 dark:text-gray-300">Email Address</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="mt-1.5 w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="mt-1.5 w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-medium text-gray-300">Password</label>
-              <Link href="#" className="text-[11px] text-purple-400 hover:text-purple-300">
+              <label className="block text-xs font-medium text-slate-700 dark:text-gray-300">Password</label>
+              <Link href="#" className="text-[11px] text-purple-600 dark:text-purple-400 hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -131,12 +131,12 @@ export default function SignInPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-white/10 bg-white/5 pl-3.5 pr-10 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 pl-3.5 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-400 hover:text-slate-600 dark:hover:text-white transition-colors p-1"
                 title={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
                 aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
               >
@@ -147,15 +147,15 @@ export default function SignInPage() {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all hover:scale-[1.01]"
+            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all hover:scale-[1.01] keep-white"
           >
             Sign In to Frameora
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-gray-400">
+        <p className="mt-6 text-center text-xs text-slate-500 dark:text-gray-400">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="font-semibold text-purple-400 hover:text-purple-300">
+          <Link href="/signup" className="font-semibold text-purple-600 dark:text-purple-400 hover:underline">
             Create account
           </Link>
         </p>

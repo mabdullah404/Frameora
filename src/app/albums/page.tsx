@@ -254,7 +254,7 @@ function AlbumsContent() {
           </div>
 
           {/* Photos Grid */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
             {albumPhotos.map((photo, index) => {
               const userHasLiked = isFavorite(photo.id);
               const currentLikes = getLikesCount(photo.id);
@@ -263,66 +263,66 @@ function AlbumsContent() {
                 <div
                   key={photo.id}
                   onClick={() => openLightbox(index)}
-                  className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/[0.08] bg-[#121422]/70 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-600/15"
+                  className="group relative cursor-pointer overflow-hidden rounded-2xl sm:rounded-3xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#121422]/70 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-600/15 shadow-sm"
                 >
-                  <div className="relative aspect-[4/5] w-full overflow-hidden bg-black/40">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/40">
                     <Image
                       src={photo.image}
                       alt={photo.title}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
                     />
 
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-black/10 to-black/30" />
 
-                    <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between">
-                      <span className="rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-purple-300">
+                    <div className="absolute top-2.5 inset-x-2.5 sm:top-3.5 sm:inset-x-3.5 flex items-center justify-between">
+                      <span className="rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-semibold text-purple-300 keep-white">
                         {photo.category}
                       </span>
 
                       <button
                         type="button"
                         onClick={(e) => handleToggleLike(e, photo.id)}
-                        className={`flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md border transition-all ${
+                        className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full backdrop-blur-md border transition-all keep-white ${
                           userHasLiked
-                            ? "bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/30 scale-110"
+                            ? "bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/30 scale-105"
                             : "bg-black/40 text-white border-white/20 hover:bg-rose-500/80"
                         }`}
                         title={userHasLiked ? "Remove from Favorites" : "Save to Favorites"}
                       >
-                        <Heart className={`h-4 w-4 ${userHasLiked ? "fill-white" : ""}`} />
+                        <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${userHasLiked ? "fill-white" : ""}`} />
                       </button>
                     </div>
 
-                    <div className="absolute bottom-0 inset-x-0 p-4">
-                      <div className="flex items-center justify-between gap-2">
+                    <div className="absolute bottom-0 inset-x-0 p-2.5 sm:p-4 photo-card-overlay">
+                      <div className="flex items-center justify-between gap-1.5 sm:gap-2">
                         <div className="min-w-0 flex-1">
-                          <h2 className="text-xs font-bold text-white drop-shadow-md truncate">
+                          <h2 className="text-[11px] sm:text-xs font-bold text-white drop-shadow-md truncate keep-white">
                             {photo.title}
                           </h2>
-                          <p className="text-[10px] text-gray-300 drop-shadow-sm truncate">
+                          <p className="text-[9px] sm:text-[10px] text-gray-300 drop-shadow-sm truncate keep-white">
                             {photo.location || photo.folder}
                           </p>
                         </div>
 
-                        <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0">
                           <button
                             type="button"
                             onClick={(e) => handleDownloadPhoto(e, photo)}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors"
+                            className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors keep-white"
                             title="Download Original Quality"
                           >
-                            <Download className="h-3.5 w-3.5" />
+                            <Download className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </button>
 
                           <Link
                             href={`/photos/${photo.id}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors"
+                            className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors keep-white"
                             title="Open Details"
                           >
-                            <Eye className="h-3.5 w-3.5" />
+                            <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </Link>
                         </div>
                       </div>
@@ -349,45 +349,50 @@ function AlbumsContent() {
         /* Albums Overview Page */
         <div>
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-black/[0.08] dark:border-white/[0.08] pb-6 sm:pb-8">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 border border-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-300 uppercase tracking-widest mb-3">
+              <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 border border-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-600 dark:text-purple-300 uppercase tracking-widest mb-3">
                 <FolderOpen className="h-3.5 w-3.5" />
                 <span>Curated Portfolios</span>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
                 Photo <span className="text-gradient-purple">Albums</span>
               </h1>
-              <p className="mt-2 text-sm sm:text-base text-gray-400">
+              <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-gray-400">
                 Explore structured photo essays and memory vaults by Md. Abdullah Al Mamun
               </p>
             </div>
 
             <Link
               href="/explore"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-[#121422] px-5 py-2.5 text-xs font-semibold text-gray-200 hover:border-purple-500/40 hover:text-white transition-all self-start md:self-auto"
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121422] px-5 py-2.5 text-xs font-semibold text-slate-800 dark:text-gray-200 hover:border-purple-500/40 hover:text-purple-600 dark:hover:text-white transition-all self-start md:self-auto shadow-sm"
             >
-              <Camera className="h-4 w-4 text-purple-400" />
+              <Camera className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               <span>Explore All {photos.length} Frames</span>
             </Link>
           </div>
 
           {/* Guest Unlock Notice */}
           {!isLoggedIn && (
-            <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-purple-500/30 bg-purple-950/20 px-5 py-3.5 backdrop-blur-xl">
-              <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600/20 text-purple-400">
-                  <Sparkles className="h-4 w-4" />
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-2xl border border-purple-200 dark:border-purple-500/30 bg-purple-50 dark:bg-purple-950/30 px-5 py-3.5 shadow-sm">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-600/10 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 mt-0.5 sm:mt-0">
+                  <Sparkles className="h-4.5 w-4.5" />
                 </div>
-                <p className="text-xs text-gray-300">
-                  Campus Life, Golden Memories, and Funny Mems are reserved for registered members. Sign in to view all albums!
-                </p>
+                <div>
+                  <p className="text-xs font-bold text-purple-950 dark:text-purple-100">
+                    🔒 ক্যাম্পাস লাইফ, গোল্ডেন মেমোরিজ এবং ব্রাদারহুড অ্যালবামগুলো দেখতে সাইন ইন করুন
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-purple-800/80 dark:text-purple-300/80">
+                    সাইন ইন করলেই সকল প্রাইভেট কালেকশন আনলক হবে এবং নিজস্ব ফ্রেম আপলোড ও বুকমার্ক করতে পারবেন।
+                  </p>
+                </div>
               </div>
               <Link
                 href="/signin"
-                className="self-start sm:self-auto shrink-0 rounded-full bg-purple-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-purple-500 shadow-md shadow-purple-600/30"
+                className="self-start sm:self-auto shrink-0 rounded-xl bg-purple-600 hover:bg-purple-500 px-4 py-2 text-xs font-bold text-white shadow-md shadow-purple-600/30 transition-all keep-white"
               >
-                Sign In to Unlock
+                লগইন করে আনলক করুন →
               </Link>
             </div>
           )}

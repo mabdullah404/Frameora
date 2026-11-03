@@ -367,37 +367,37 @@ export default function ProfilePage() {
     <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       
       {/* Profile Header */}
-      <div className="rounded-3xl border border-white/10 bg-[#121422]/70 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-96 h-48 bg-purple-600/10 blur-[100px] pointer-events-none rounded-full" />
+      <div className="rounded-3xl border border-white/10 bg-[#121422]/70 p-5 sm:p-8 backdrop-blur-2xl shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-80 h-40 bg-purple-600/10 blur-[90px] pointer-events-none rounded-full" />
 
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 relative z-10">
           
           {/* Avatar & User Details */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-            <div className="relative group">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left w-full lg:w-auto">
+            <div className="relative group shrink-0">
               <UserAvatar
                 src={user?.avatar}
                 name={user?.name}
-                size="2xl"
+                size="xl"
                 priority
-                className="border-4 border-purple-500/40 shadow-2xl ring-4 ring-black/40"
+                className="border-4 border-purple-500/40 shadow-xl ring-2 ring-black/40"
               />
               <button
                 type="button"
                 onClick={() => setIsCropModalOpen(true)}
-                className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full bg-purple-600 text-white border-2 border-[#121422] shadow-lg hover:bg-purple-500 hover:scale-110 transition-all"
-                title="Change or Crop Profile Picture"
+                className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-white border-2 border-[#121422] shadow-lg hover:bg-purple-500 hover:scale-110 transition-all"
+                title="Change Profile Picture"
               >
-                <Camera className="h-4 w-4" />
+                <Camera className="h-3.5 w-3.5" />
               </button>
             </div>
 
             <div className="max-w-xl">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white">
                   {user?.name || (isAdmin ? "Md. Abdullah Al Mamun" : "Community Member")}
                 </h1>
-                <span className={`rounded-full px-3 py-0.5 text-xs font-semibold uppercase tracking-wider border ${
+                <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider border ${
                   isAdmin
                     ? "bg-purple-500/20 border-purple-500/40 text-purple-300"
                     : "bg-blue-500/20 border-blue-500/30 text-blue-300"
@@ -406,31 +406,37 @@ export default function ProfilePage() {
                 </span>
 
                 {user?.experience && (
-                  <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+                  <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
                     {user.experience}
                   </span>
                 )}
               </div>
 
-              {/* Email Address & Username */}
-              <div className="mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-purple-300 font-medium">
-                <span className="flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5 text-purple-400" />
+              {/* Username & Email */}
+              <div className="mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-2.5 text-xs text-purple-300">
+                {user?.username && (
+                  <span className="font-semibold text-gray-300">@{user.username}</span>
+                )}
+                <span className="flex items-center gap-1 text-gray-400">
+                  <Mail className="h-3 w-3 text-purple-400" />
                   <span>{user?.email || "member@frameora.com"}</span>
                 </span>
-                {user?.username && (
-                  <span className="text-gray-400">@{user.username}</span>
-                )}
               </div>
 
-              <p className="mt-3 text-xs sm:text-sm text-gray-300 leading-relaxed">
+              {/* Bio */}
+              <p className="mt-2.5 text-xs sm:text-sm text-gray-300 leading-relaxed max-w-lg">
                 {user?.bio || (isAdmin ? "Passionate photographer & visual curator. Preserving authentic landscapes." : "Photography explorer on Frameora.")}
               </p>
 
-              {/* Location, Photography category & Social Links */}
-              <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-gray-400">
+              {/* Metadata Row: Joined Date, Location, Focus */}
+              <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3.5 text-xs text-gray-400">
                 <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5 text-purple-400" />
+                  <Calendar className="h-3 w-3 text-purple-400" />
+                  <span>Joined {user?.joinedDate ? new Date(user.joinedDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "2026"}</span>
+                </span>
+
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3 w-3 text-emerald-400" />
                   <span>{user?.location || "Dhaka, Bangladesh"}</span>
                 </span>
 
@@ -447,68 +453,21 @@ export default function ProfilePage() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-purple-400 hover:text-purple-300 underline"
                   >
-                    <Globe className="h-3.5 w-3.5" />
+                    <Globe className="h-3 w-3" />
                     <span>Portfolio</span>
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-2.5 w-2.5" />
                   </a>
-                )}
-
-                {/* Social icons if provided */}
-                {(user?.facebook || user?.instagram || user?.linkedin) && (
-                  <div className="flex items-center gap-2 pl-2 border-l border-white/10">
-                    {user.facebook && (
-                      <a
-                        href={user.facebook.startsWith("http") ? user.facebook : `https://${user.facebook}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-blue-400 text-xs font-bold"
-                        title="Facebook Profile"
-                      >
-                        FB
-                      </a>
-                    )}
-                    {user.instagram && (
-                      <a
-                        href={user.instagram.startsWith("http") ? user.instagram : `https://instagram.com/${user.instagram.replace("@", "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-pink-400 text-xs font-bold"
-                        title="Instagram Profile"
-                      >
-                        IG
-                      </a>
-                    )}
-                    {user.linkedin && (
-                      <a
-                        href={user.linkedin.startsWith("http") ? user.linkedin : `https://${user.linkedin}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-sky-400 text-xs font-bold"
-                        title="LinkedIn Profile"
-                      >
-                        IN
-                      </a>
-                    )}
-                  </div>
-                )}
-
-                {isAdmin && (
-                  <span className="flex items-center gap-1 text-purple-300 font-semibold">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>Verified Owner</span>
-                  </span>
                 )}
               </div>
             </div>
           </div>
 
           {/* Action Buttons: Upload Photo & Edit Profile */}
-          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end">
-            
+          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-center lg:justify-end shrink-0">
             <button
               type="button"
               onClick={openUploadModal}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 hover:scale-[1.02] transition-all"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-purple-600/30 hover:brightness-110 hover:scale-[1.02] transition-all keep-white"
             >
               <UploadCloud className="h-4 w-4" />
               <span>Upload Photo</span>
@@ -518,7 +477,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={handleFollowCreator}
-                className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-xs font-semibold transition-all ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-xs font-semibold transition-all ${
                   isFollowingCreator
                     ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
                     : "border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"
@@ -527,12 +486,12 @@ export default function ProfilePage() {
                 {isFollowingCreator ? (
                   <>
                     <UserCheck className="h-3.5 w-3.5 text-emerald-400" />
-                    <span>Following Creator</span>
+                    <span>Following</span>
                   </>
                 ) : (
                   <>
                     <UserPlus className="h-3.5 w-3.5" />
-                    <span>Follow Abdullah</span>
+                    <span>Follow Creator</span>
                   </>
                 )}
               </button>
@@ -541,7 +500,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-gray-300 hover:bg-white/10 hover:border-purple-500/40 transition-all"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:border-purple-500/40 transition-all"
             >
               <Edit3 className="h-3.5 w-3.5 text-purple-400" />
               <span>Edit Profile</span>
@@ -549,42 +508,42 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Real User Upload Statistics Grid */}
-        <div className="mt-8 pt-6 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        {/* Real User Statistics Grid */}
+        <div className="mt-6 pt-5 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
           <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5">
-            <p className="text-2xl sm:text-3xl font-extrabold text-white">
+            <p className="text-xl sm:text-2xl font-black text-white">
               {myUploadedPhotos.length}
             </p>
-            <p className="text-xs text-gray-400 uppercase tracking-wider mt-1">Total Uploads</p>
+            <p className="text-[11px] text-gray-400 uppercase tracking-wider mt-0.5">Total Photos</p>
           </div>
 
           <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5">
-            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
-              {publicPhotosCount}
+            <p className="text-xl sm:text-2xl font-black text-blue-400">
+              {albums.length}
             </p>
-            <p className="text-xs text-emerald-300/80 uppercase tracking-wider mt-1 flex items-center justify-center gap-1">
-              <Globe className="h-3 w-3" />
-              <span>Public Frames</span>
-            </p>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5">
-            <p className="text-2xl sm:text-3xl font-extrabold text-purple-400">
-              {privatePhotosCount}
-            </p>
-            <p className="text-xs text-purple-300/80 uppercase tracking-wider mt-1 flex items-center justify-center gap-1">
-              <Lock className="h-3 w-3" />
-              <span>Private Frames</span>
+            <p className="text-[11px] text-blue-300/80 uppercase tracking-wider mt-0.5 flex items-center justify-center gap-1">
+              <FolderOpen className="h-3 w-3" />
+              <span>Albums</span>
             </p>
           </div>
 
           <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5">
-            <p className="text-2xl sm:text-3xl font-extrabold text-rose-400">
+            <p className="text-xl sm:text-2xl font-black text-rose-400">
               {favorites.length}
             </p>
-            <p className="text-xs text-rose-300/80 uppercase tracking-wider mt-1 flex items-center justify-center gap-1">
+            <p className="text-[11px] text-rose-300/80 uppercase tracking-wider mt-0.5 flex items-center justify-center gap-1">
               <Heart className="h-3 w-3" />
               <span>Favorites</span>
+            </p>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5">
+            <p className="text-xl sm:text-2xl font-black text-emerald-400">
+              {publicPhotosCount}
+            </p>
+            <p className="text-[11px] text-emerald-300/80 uppercase tracking-wider mt-0.5 flex items-center justify-center gap-1">
+              <Globe className="h-3 w-3" />
+              <span>Public Uploads</span>
             </p>
           </div>
         </div>
@@ -649,11 +608,11 @@ export default function ProfilePage() {
               onAction={openUploadModal}
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {myUploadedPhotos.map((photo, idx) => (
                 <div
                   key={photo.id}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-[#121422] hover:border-purple-500/40 hover:shadow-2xl hover:shadow-purple-600/10 transition-all"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl sm:rounded-3xl border border-black/[0.06] dark:border-white/10 bg-white dark:bg-[#121422] hover:border-purple-500/40 hover:shadow-2xl hover:shadow-purple-600/10 transition-all shadow-sm"
                 >
                   {/* Photo Thumbnail */}
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/40">
@@ -661,21 +620,21 @@ export default function ProfilePage() {
                       src={photo.image}
                       alt={photo.title}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover object-top sm:object-center transition-transform duration-500 group-hover:scale-105"
                     />
 
                     {/* Privacy Badge overlay */}
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                    <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 flex items-center gap-1.5">
                       {photo.isPrivate ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-purple-950/90 border border-purple-500/50 px-2.5 py-1 text-[11px] font-bold text-purple-300 backdrop-blur-md shadow-md">
-                          <Lock className="h-3 w-3 text-purple-400" />
-                          <span>Private (ব্যক্তিগত)</span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-purple-950/90 border border-purple-500/50 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[11px] font-bold text-purple-300 backdrop-blur-md shadow-md keep-white">
+                          <Lock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-purple-400" />
+                          <span>Private</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-950/90 border border-emerald-500/50 px-2.5 py-1 text-[11px] font-bold text-emerald-300 backdrop-blur-md shadow-md">
-                          <Globe className="h-3 w-3 text-emerald-400" />
-                          <span>Public (উন্মুক্ত)</span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-950/90 border border-emerald-500/50 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[11px] font-bold text-emerald-300 backdrop-blur-md shadow-md keep-white">
+                          <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-emerald-400" />
+                          <span>Public</span>
                         </span>
                       )}
                     </div>
@@ -684,10 +643,10 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => openLightbox(idx)}
-                      className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md hover:bg-purple-600 transition-colors"
+                      className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md hover:bg-purple-600 transition-colors keep-white"
                       title="Fullscreen Preview"
                     >
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </button>
                   </div>
 
@@ -856,18 +815,19 @@ export default function ProfilePage() {
               actionHref="/explore"
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
               {favoritePhotos.map((photo, idx) => (
                 <div
                   key={photo.id}
                   onClick={() => openLightbox(idx)}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-[#121422] aspect-[4/3] hover:border-rose-500/40 transition-all"
+                  className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#121422] aspect-[4/3] hover:border-rose-500/40 transition-all shadow-sm"
                 >
                   <Image
                     src={photo.image}
                     alt={photo.title}
                     fill
-                    className="object-cover"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover object-top sm:object-center"
                   />
                   <button
                     type="button"
@@ -875,14 +835,14 @@ export default function ProfilePage() {
                       e.stopPropagation();
                       toggleLike(photo.id);
                     }}
-                    className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-rose-500 text-white shadow-lg"
+                    className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 flex h-7 w-7 items-center justify-center rounded-full bg-rose-500 text-white shadow-lg keep-white"
                     title="Remove from favorites"
                   >
                     <Heart className="h-3.5 w-3.5 fill-white" />
                   </button>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
-                    <p className="text-xs font-bold text-white">{photo.title}</p>
-                    <p className="text-[11px] text-purple-300">By {photo.photographer}</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2.5 sm:p-4 flex flex-col justify-end photo-card-overlay">
+                    <p className="text-[11px] sm:text-xs font-bold text-white keep-white line-clamp-1">{photo.title}</p>
+                    <p className="text-[9px] sm:text-[11px] text-purple-300 keep-white">By {photo.photographer}</p>
                   </div>
                 </div>
               ))}

@@ -112,25 +112,25 @@ export default function FavoritesPage() {
   return (
     <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/[0.08] pb-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-black/[0.08] dark:border-white/[0.08] pb-6 sm:pb-8">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/10 border border-rose-500/20 px-3 py-1 text-xs font-semibold text-rose-300 uppercase tracking-widest mb-3">
-            <Heart className="h-3.5 w-3.5 fill-rose-400 text-rose-400" />
+          <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/10 border border-rose-500/20 px-3 py-1 text-xs font-semibold text-rose-600 dark:text-rose-300 uppercase tracking-widest mb-3">
+            <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" />
             <span>Curated Collection</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
             My <span className="text-gradient-purple">Favorites</span>
           </h1>
-          <p className="mt-2 text-sm sm:text-base text-gray-400">
+          <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-gray-400">
             You have saved {favoritePhotos.length} {favoritePhotos.length === 1 ? "frame" : "frames"} to your personal sanctuary
           </p>
         </div>
 
         <Link
           href="/explore"
-          className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-[#121422] px-5 py-2.5 text-xs font-semibold text-gray-200 hover:border-purple-500/40 hover:text-white transition-all self-start md:self-auto"
+          className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121422] px-5 py-2.5 text-xs font-semibold text-slate-800 dark:text-gray-200 hover:border-purple-500/40 hover:text-purple-600 dark:hover:text-white transition-all self-start md:self-auto shadow-sm"
         >
-          <Compass className="h-4 w-4 text-purple-400" />
+          <Compass className="h-4 w-4 text-purple-600 dark:text-purple-400" />
           <span>Discover More Frames</span>
         </Link>
       </div>
@@ -147,7 +147,7 @@ export default function FavoritesPage() {
           />
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
           {favoritePhotos.map((photo, index) => {
             const currentLikes = getLikesCount(photo.id);
 
@@ -155,24 +155,24 @@ export default function FavoritesPage() {
               <div
                 key={photo.id}
                 onClick={() => openLightbox(index)}
-                className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/[0.08] bg-[#121422]/70 backdrop-blur-xl transition-all duration-300 hover:border-rose-500/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rose-600/10 flex flex-col justify-between"
+                className="group relative cursor-pointer overflow-hidden rounded-2xl sm:rounded-3xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#121422]/70 backdrop-blur-xl transition-all duration-300 hover:border-rose-500/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rose-600/10 flex flex-col justify-between shadow-sm"
               >
                 {/* Photo Thumbnail */}
-                <div className="relative aspect-[4/5] w-full overflow-hidden bg-black/40">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/40">
                   <Image
                     src={photo.image}
                     alt={photo.title}
                     fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
                   />
 
                   {/* Gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-black/10 to-black/30" />
 
                   {/* Top Badges */}
-                  <div className="absolute top-3.5 inset-x-3.5 flex items-center justify-between">
-                    <span className="rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-purple-300">
+                  <div className="absolute top-2.5 inset-x-2.5 sm:top-3.5 sm:inset-x-3.5 flex items-center justify-between">
+                    <span className="rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-semibold text-purple-300 keep-white">
                       {photo.category}
                     </span>
 
@@ -180,44 +180,44 @@ export default function FavoritesPage() {
                     <button
                       type="button"
                       onClick={(e) => handleRemoveFavorite(e, photo.id)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-500/90 text-white backdrop-blur-md border border-rose-400 hover:scale-110 transition-transform shadow-lg"
+                      className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-rose-500/90 text-white backdrop-blur-md border border-rose-400 hover:scale-110 transition-transform shadow-lg keep-white"
                       title="Remove from Favorites"
                     >
-                      <Heart className="h-4 w-4 fill-white text-white" />
+                      <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-white text-white" />
                     </button>
                   </div>
 
                   {/* Bottom details & quick actions */}
-                  <div className="absolute bottom-0 inset-x-0 p-4">
-                    <div className="flex items-center justify-between gap-2">
+                  <div className="absolute bottom-0 inset-x-0 p-2.5 sm:p-3.5 photo-card-overlay">
+                    <div className="flex items-center justify-between gap-1.5 sm:gap-2">
                       <div className="min-w-0 flex-1">
-                        <h2 className="text-xs font-bold text-white drop-shadow-md truncate">
+                        <h2 className="text-[11px] sm:text-xs font-bold text-white drop-shadow-md truncate keep-white">
                           {photo.title}
                         </h2>
-                        <p className="text-[10px] text-gray-300 drop-shadow-sm truncate">
+                        <p className="text-[9px] sm:text-[10px] text-gray-300 drop-shadow-sm truncate keep-white">
                           {photo.location || photo.folder || "Bangladesh"}
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
                         {/* Download button */}
                         <button
                           type="button"
                           onClick={(e) => handleDownloadOriginal(e, photo)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors"
+                          className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors keep-white"
                           title="Download Original Quality"
                         >
-                          <Download className="h-3.5 w-3.5" />
+                          <Download className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         </button>
 
                         {/* Detail Link */}
                         <Link
                           href={`/photos/${photo.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors"
+                          className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-black/60 text-gray-200 border border-white/10 hover:bg-purple-600 hover:text-white transition-colors keep-white"
                           title="Open Details Page"
                         >
-                          <Eye className="h-3.5 w-3.5" />
+                          <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         </Link>
                       </div>
                     </div>

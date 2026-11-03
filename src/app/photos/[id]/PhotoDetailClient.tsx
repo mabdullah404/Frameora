@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
 import { useToast } from "@/context/ToastContext";
@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 
 export default function PhotoDetailClient({ id }: { id: string }) {
+  const router = useRouter();
   const { isLoggedIn, login } = useAuth();
   const { photos, isFavorite, toggleLike, getLikesCount } = usePhotos();
   const { toast } = useToast();
@@ -40,6 +41,14 @@ export default function PhotoDetailClient({ id }: { id: string }) {
   const [userReaction, setUserReaction] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/explore");
+    }
+  };
 
   if (!photo) {
     return notFound();
@@ -145,17 +154,19 @@ export default function PhotoDetailClient({ id }: { id: string }) {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      {/* Top Breadcrumb & Navigation */}
-      <div className="flex items-center justify-between">
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-gray-400 hover:text-purple-400 transition-colors"
+      {/* Top Breadcrumb & Navigation with Smart Back Button */}
+      <div className="flex items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
+        <button
+          type="button"
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs sm:text-sm font-semibold text-gray-200 hover:text-white hover:bg-white/10 hover:border-purple-500/40 transition-all shadow-sm active:scale-95"
+          title="Return to previous gallery page"
         >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Explore Gallery</span>
-        </Link>
+          <ArrowLeft className="h-4 w-4 text-purple-400" />
+          <span>← Back to Gallery</span>
+        </button>
 
-        <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs text-purple-300">
+        <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-3.5 py-1 text-xs text-purple-300 font-medium">
           Album: <strong className="text-white capitalize">{photo.category || photo.folder}</strong>
         </span>
       </div>

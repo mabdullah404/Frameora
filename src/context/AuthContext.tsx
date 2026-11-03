@@ -30,6 +30,7 @@ export type AuthUser = {
   dob?: string;
   gender?: string;
   location?: string;
+  joinedDate?: string;
   // Photography Info (Optional)
   photographerName?: string;
   experience?: string;
