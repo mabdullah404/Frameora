@@ -118,40 +118,40 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-[#121422] p-6 sm:p-8 shadow-2xl my-8">
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/85 backdrop-blur-md p-3 sm:p-6 flex justify-center items-start sm:items-center pt-8 sm:pt-12 pb-16">
+      <div className="relative w-full max-w-xl rounded-3xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#121422] p-5 sm:p-8 shadow-2xl my-auto">
         
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-600/20 text-purple-400 border border-purple-500/30">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-600/15 dark:bg-purple-600/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">
             <UploadCloud className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Upload New Photo</h2>
-            <p className="text-xs text-gray-400">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Upload New Photo</h2>
+            <p className="text-xs text-slate-500 dark:text-gray-400">
               Preserve your authentic frames with full original resolution
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
+          <div className="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-300 flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300 flex items-center gap-2">
+          <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-600 dark:text-emerald-300 flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>Photo successfully saved to MongoDB in original quality!</span>
           </div>
@@ -161,7 +161,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           
           {/* Image Drag & Drop / File Select */}
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
               Photo Image <span className="text-rose-400">*</span>
             </label>
 
@@ -177,14 +177,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white hover:bg-purple-500"
+                    className="rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white hover:bg-purple-500 keep-white"
                   >
                     Change Image
                   </button>
                   <button
                     type="button"
                     onClick={() => setImagePreview(null)}
-                    className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500"
+                    className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500 keep-white"
                   >
                     Remove
                   </button>
@@ -193,16 +193,16 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="cursor-pointer border-2 border-dashed border-white/15 hover:border-purple-500/50 rounded-2xl p-6 text-center bg-white/[0.02] hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center gap-2"
+                className="cursor-pointer border-2 border-dashed border-slate-300 dark:border-white/15 hover:border-purple-500/50 rounded-2xl p-6 text-center bg-slate-50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center gap-2"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600/10 text-purple-400 border border-purple-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
                   <Camera className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-white">
+                  <p className="text-xs font-semibold text-slate-800 dark:text-white">
                     Click to browse or drag and drop an image
                   </p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">
+                  <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5">
                     Original uncompressed resolution preserved (JPG, PNG, WebP)
                   </p>
                 </div>
@@ -220,7 +220,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
           {/* Privacy Toggle: Public vs Private */}
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
               Privacy Settings <span className="text-rose-400">*</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -229,14 +229,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 onClick={() => setIsPrivate(false)}
                 className={`flex items-start gap-2.5 rounded-xl border p-3 text-left transition-all ${
                   !isPrivate
-                    ? "border-emerald-500/60 bg-emerald-500/15 text-white ring-1 ring-emerald-500/40"
-                    : "border-white/10 bg-white/[0.03] text-gray-400 hover:border-white/20"
+                    ? "border-emerald-500/60 bg-emerald-500/15 text-slate-900 dark:text-white ring-1 ring-emerald-500/40"
+                    : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 hover:border-slate-300"
                 }`}
               >
-                <Globe className={`h-4 w-4 mt-0.5 shrink-0 ${!isPrivate ? "text-emerald-400" : "text-gray-400"}`} />
+                <Globe className={`h-4 w-4 mt-0.5 shrink-0 ${!isPrivate ? "text-emerald-500 dark:text-emerald-400" : "text-slate-400 dark:text-gray-400"}`} />
                 <div>
-                  <p className="text-xs font-bold text-white">Public (উন্মুক্ত)</p>
-                  <p className="text-[10px] text-gray-300 mt-0.5 leading-tight">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">Public (উন্মুক্ত)</p>
+                  <p className="text-[10px] text-slate-600 dark:text-gray-300 mt-0.5 leading-tight">
                     Explore গ্যালারিতে সবার জন্য দৃশ্যমান ও মূল কোয়ালিটিতে ডাউনলোডযোগ্য।
                   </p>
                 </div>
@@ -247,14 +247,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                 onClick={() => setIsPrivate(true)}
                 className={`flex items-start gap-2.5 rounded-xl border p-3 text-left transition-all ${
                   isPrivate
-                    ? "border-purple-500/60 bg-purple-500/20 text-white ring-1 ring-purple-500/40"
-                    : "border-white/10 bg-white/[0.03] text-gray-400 hover:border-white/20"
+                    ? "border-purple-500/60 bg-purple-500/20 text-slate-900 dark:text-white ring-1 ring-purple-500/40"
+                    : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-500 dark:text-gray-400 hover:border-slate-300"
                 }`}
               >
-                <Lock className={`h-4 w-4 mt-0.5 shrink-0 ${isPrivate ? "text-purple-400" : "text-gray-400"}`} />
+                <Lock className={`h-4 w-4 mt-0.5 shrink-0 ${isPrivate ? "text-purple-600 dark:text-purple-400" : "text-slate-400 dark:text-gray-400"}`} />
                 <div>
-                  <p className="text-xs font-bold text-white">Private (ব্যক্তিগত)</p>
-                  <p className="text-[10px] text-gray-300 mt-0.5 leading-tight">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">Private (ব্যক্তিগত)</p>
+                  <p className="text-[10px] text-slate-600 dark:text-gray-300 mt-0.5 leading-tight">
                     শুধুমাত্র আপনার ব্যক্তিগত প্রোফাইলে থাকবে। অন্য কেউ দেখতে বা ডাউনলোড করতে পারবে না।
                   </p>
                 </div>
@@ -264,18 +264,18 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
           {/* Title Input */}
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
               Photo Title <span className="text-rose-400">*</span>
             </label>
             <div className="relative">
-              <FileText className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <FileText className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-gray-400" />
               <input
                 type="text"
                 required
                 placeholder="e.g. Misty Sunrise over Sylhet Hills"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-[#181a2b] pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181a2b] pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm"
               />
             </div>
           </div>
@@ -283,15 +283,15 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
           {/* Category & Location Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
                 Category
               </label>
               <div className="relative">
-                <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-gray-400" />
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#181a2b] pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181a2b] pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none shadow-sm cursor-pointer"
                 >
                   <option value="Nature">🌿 Nature & Landscape</option>
                   <option value="travel">✈️ Travel</option>
@@ -306,17 +306,17 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
                 Location
               </label>
               <div className="relative">
-                <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-gray-400" />
                 <input
                   type="text"
                   placeholder="e.g. Sylhet, Bangladesh"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#181a2b] pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181a2b] pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:border-purple-500 focus:outline-none shadow-sm"
                 />
               </div>
             </div>
@@ -324,7 +324,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
               Description / Story
             </label>
             <textarea
@@ -332,7 +332,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               placeholder="Tell the story behind this shot..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-[#181a2b] px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none resize-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181a2b] px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:border-purple-500 focus:outline-none resize-none shadow-sm"
             />
           </div>
 
@@ -342,14 +342,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="rounded-xl border border-white/10 px-4 py-2 text-xs font-semibold text-gray-300 hover:bg-white/5"
+              className="rounded-xl border border-slate-200 dark:border-white/10 px-4 py-2 text-xs font-semibold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 disabled:opacity-50 keep-white"
             >
               {isSubmitting ? (
                 <>

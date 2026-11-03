@@ -2,13 +2,21 @@
 
 html {
   color-scheme: dark;
+  scroll-behavior: smooth !important;
   /* Always preserve scrollbar gutter so page layout never jumps left/right */
   overflow-y: scroll;
   scrollbar-gutter: stable;
 }
 
-/* Next.js official smooth scroll rule: avoids scroll jumping on route navigation */
-html[data-scroll-behavior="smooth"] {
+/* Global smooth scrolling */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Momentum scrolling for iOS/Android horizontal collections */
+.no-scrollbar,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 }
 
@@ -203,9 +211,16 @@ html[data-theme="light"] footer {
   color: #475569 !important;
 }
 
-/* PRESERVE WHITE TEXT ON COLORED / PHOTO OVERLAYS */
+/* PRESERVE WHITE TEXT ON COLORED / PHOTO OVERLAYS & HERO */
 html[data-theme="light"] .keep-white,
 html[data-theme="light"] .keep-white *,
+html[data-theme="light"] .hero-section,
+html[data-theme="light"] .hero-section *,
+html[data-theme="light"] .hero-section h1,
+html[data-theme="light"] .hero-section h1 *,
+html[data-theme="light"] .hero-section p,
+html[data-theme="light"] .hero-section span,
+html[data-theme="light"] .hero-section a,
 html[data-theme="light"] button.bg-purple-600,
 html[data-theme="light"] button.bg-purple-600 *,
 html[data-theme="light"] a.bg-purple-600,
@@ -220,6 +235,27 @@ html[data-theme="light"] .photo-overlay *,
 html[data-theme="light"] .photo-card-overlay,
 html[data-theme="light"] .photo-card-overlay * {
   color: #ffffff !important;
+}
+
+html[data-theme="light"] .hero-section .hero-desc {
+  color: #e2e8f0 !important;
+}
+html[data-theme="light"] .hero-section .hero-badge-text {
+  color: #e9d5ff !important;
+}
+html[data-theme="light"] .hero-section .hero-metric,
+html[data-theme="light"] .hero-section .hero-metric * {
+  color: #cbd5e1 !important;
+}
+html[data-theme="light"] .hero-section a.hero-secondary-btn {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+html[data-theme="light"] .photo-card-overlay .text-gray-300,
+html[data-theme="light"] .photo-card-overlay .text-gray-400 {
+  color: #e2e8f0 !important;
 }
 
 /* Light mode category pill inactive state */

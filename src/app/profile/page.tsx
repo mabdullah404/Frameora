@@ -54,6 +54,7 @@ export default function ProfilePage() {
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [photoToDelete, setPhotoToDelete] = useState<Photo | null>(null);
 
   const isAdmin = role === "admin" && user?.email?.toLowerCase().trim() === "mabdullah539629@gmail.com";
 
@@ -168,10 +169,14 @@ export default function ProfilePage() {
   };
 
   const handleDeletePhoto = (photo: Photo) => {
-    if (confirm(`আপনি কি নিশ্চিত যে '${photo.title}' ছবিটি মুছে ফেলতে চান?`)) {
-      removePhoto(photo.id);
-      toast.info("ছবিটি সফলভাবে মুছে ফেলা হয়েছে");
-    }
+    setPhotoToDelete(photo);
+  };
+
+  const confirmDeletePhoto = () => {
+    if (!photoToDelete) return;
+    removePhoto(photoToDelete.id);
+    toast.success(`🗑️ "${photoToDelete.title}" ছবিটি সফলভাবে মুছে ফেলা হয়েছে!`);
+    setPhotoToDelete(null);
   };
 
   // Handle avatar update from crop modal
@@ -926,6 +931,40 @@ export default function ProfilePage() {
         onClose={() => setLightboxOpen(false)}
         onNavigate={(idx) => setLightboxIndex(idx)}
       />
+
+      {/* Delete Confirmation Custom Modal */}
+      {photoToDelete && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+          <div className="relative w-full max-w-sm rounded-3xl border border-rose-500/30 bg-white dark:bg-[#121422] p-6 shadow-2xl text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-500 border border-rose-500/30 mb-4">
+              <Trash2 className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">ছবি মুছে ফেলার নিশ্চিতকরণ</h3>
+            <p className="mt-2 text-xs text-slate-600 dark:text-gray-300 leading-relaxed">
+              আপনি কি নিশ্চিতভাবে <strong className="text-slate-900 dark:text-white">&quot;{photoToDelete.title}&quot;</strong> ছবিটি স্থায়ীভাবে মুছে ফেলতে চান? এটি আর ফিরিয়ে আনা যাবে না।
+            </p>
+            <div className="mt-6 flex flex-col gap-2.5">
+              <button
+                type="button"
+                onClick={confirmDeletePhoto}
+                className="w-full rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white hover:bg-rose-500 shadow-md shadow-rose-600/30 transition-all keep-white"
+              >
+                হ্যাঁ, মুছে ফেলুন
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPhotoToDelete(null);
+                  toast.info("ছবি মোছা বাতিল করা হয়েছে");
+                }}
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 py-2 text-xs font-semibold text-slate-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+              >
+                বাতিল করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

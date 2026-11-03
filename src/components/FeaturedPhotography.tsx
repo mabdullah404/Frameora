@@ -60,18 +60,18 @@ export default function FeaturedPhotography() {
       className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/[0.08] pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-black/[0.08] dark:border-white/[0.08] pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 border border-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-300 uppercase tracking-widest mb-2.5">
+          <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 border border-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-600 dark:text-purple-300 uppercase tracking-widest mb-2.5">
             <Compass className="h-3.5 w-3.5" />
             <span>Curated Showcase</span>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
             Featured <span className="text-gradient-purple">Photography</span>
           </h2>
 
-          <p className="mt-1.5 max-w-xl text-xs sm:text-sm text-gray-400">
+          <p className="mt-1.5 max-w-xl text-xs sm:text-sm text-slate-600 dark:text-gray-400">
             A handpicked preview of authentic landscapes, light, and natural harmony.
           </p>
         </div>
@@ -79,15 +79,15 @@ export default function FeaturedPhotography() {
         {/* View All link */}
         <Link
           href="/explore"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors self-start sm:self-auto"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline transition-colors self-start sm:self-auto"
         >
           <span>View All {photos.length} Frames</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
-      {/* 6 Curated Photo Cards with Natural Aspect Ratio */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* 6 Curated Photo Cards with 2-Column Mobile Grid & Natural Framing */}
+      <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
         {featuredPhotos.map((photo, index) => {
           const isLiked = isFavorite(photo.id);
           const currentLikes = getLikesCount(photo.id);
@@ -96,16 +96,16 @@ export default function FeaturedPhotography() {
             <div
               key={photo.id}
               onClick={() => handleCardClick(index)}
-              className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/[0.08] bg-[#121422]/70 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-600/15"
+              className="group relative cursor-pointer overflow-hidden rounded-2xl sm:rounded-3xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-[#121422]/70 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-600/15 shadow-sm"
             >
-              {/* Image with balanced aspect ratio and top focal alignment */}
+              {/* Image with balanced aspect ratio and centered focal alignment */}
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/40">
                 <Image
                   src={photo.image}
                   alt={photo.title}
                   fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 33vw"
+                  className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                 />
 
@@ -115,9 +115,9 @@ export default function FeaturedPhotography() {
                 <button
                   type="button"
                   onClick={(e) => handleLikeClick(e, photo.id)}
-                  className={`absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md border transition-all ${
+                  className={`absolute top-2.5 right-2.5 sm:top-3 sm:right-3 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full backdrop-blur-md border transition-all keep-white ${
                     isLiked
-                      ? "bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/30 scale-110"
+                      ? "bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/30 scale-105"
                       : "bg-black/40 text-white border-white/20 hover:bg-rose-500/80"
                   }`}
                   title={isLiked ? "Saved in Favorites" : "Add to Favorites"}
@@ -126,13 +126,13 @@ export default function FeaturedPhotography() {
                 </button>
 
                 {/* Tag */}
-                <span className="absolute top-3 left-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-300">
+                <span className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-2 py-0.5 sm:px-2.5 sm:py-0.5 text-[9px] sm:text-[10px] font-semibold text-purple-300 keep-white">
                   {photo.category}
                 </span>
 
                 {/* Bottom Overlay: Photographer & Title */}
-                <div className="absolute bottom-0 inset-x-0 p-3.5 flex items-center justify-between photo-card-overlay">
-                  <div className="flex items-center gap-2 min-w-0">
+                <div className="absolute bottom-0 inset-x-0 p-2.5 sm:p-3.5 flex items-center justify-between photo-card-overlay">
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                     <UserAvatar
                       src={photo.photographer === "Abdullah" || photo.photographer?.includes("Mamun") ? "/images/Abdullah/FB_IMG_1790540440153.jpg" : undefined}
                       name={photo.photographer || "Creator"}
@@ -140,14 +140,14 @@ export default function FeaturedPhotography() {
                       className="border border-purple-500/40 shrink-0"
                     />
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">
+                      <p className="text-[11px] sm:text-xs font-bold text-white truncate keep-white">
                         {photo.photographer || "Abdullah"}
                       </p>
-                      <p className="text-[10px] text-gray-300 truncate">{photo.title}</p>
+                      <p className="text-[9px] sm:text-[10px] text-gray-300 truncate keep-white">{photo.title}</p>
                     </div>
                   </div>
 
-                  <span className="text-[10px] font-semibold text-gray-200 bg-black/50 px-2 py-0.5 rounded-full border border-white/10 shrink-0">
+                  <span className="text-[9px] sm:text-[10px] font-semibold text-gray-200 bg-black/50 px-1.5 sm:px-2 py-0.5 rounded-full border border-white/10 shrink-0 keep-white">
                     ❤️ {currentLikes}
                   </span>
                 </div>

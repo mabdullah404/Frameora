@@ -16,21 +16,21 @@ export default function StoriesSection() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 border border-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-300 uppercase tracking-widest mb-2.5">
+            <div className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 border border-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-600 dark:text-purple-300 uppercase tracking-widest mb-2.5">
               <BookOpen className="h-3.5 w-3.5" />
               <span>Visual Journals</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
               Photo Essays & <span className="text-gradient-purple">Stories</span>
             </h2>
-            <p className="mt-1.5 text-xs sm:text-sm text-gray-400 max-w-xl">
+            <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-gray-400 max-w-xl">
               Curated narrative journeys connecting light, natural tranquility, and heartfelt memories across Bengal.
             </p>
           </div>
 
           <NextLink
             href="/explore"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors self-start sm:self-auto"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline transition-colors self-start sm:self-auto"
           >
             <span>Explore All Frames</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -67,19 +67,19 @@ export default function StoriesSection() {
               {/* Story Details */}
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-[11px] text-gray-400 mb-2">
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-gray-400 mb-2">
                     <span className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3 text-purple-400" />
+                      <Calendar className="h-3 w-3 text-purple-600 dark:text-purple-400" />
                       <span>{story.date}</span>
                     </span>
                     <span>•</span>
                     <span className="flex items-center gap-1 truncate">
-                      <MapPin className="h-3 w-3 text-emerald-400" />
+                      <MapPin className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                       <span className="truncate">{story.location.split(",")[0]}</span>
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-white group-hover:text-purple-300 transition-colors line-clamp-2 leading-snug">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors line-clamp-2 leading-snug">
                     {story.title}
                   </h3>
 

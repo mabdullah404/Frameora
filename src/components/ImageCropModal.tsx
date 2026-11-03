@@ -202,8 +202,8 @@ export default function ImageCropModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-[#121422] p-6 sm:p-8 shadow-2xl my-8">
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/85 backdrop-blur-md p-3 sm:p-6 flex justify-center items-start sm:items-center pt-8 sm:pt-14 pb-16">
+      <div className="relative w-full max-w-xl rounded-3xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#121422] p-5 sm:p-8 shadow-2xl my-auto">
         
         {/* Close Button */}
         <button

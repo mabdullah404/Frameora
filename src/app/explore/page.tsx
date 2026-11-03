@@ -300,7 +300,7 @@ function ExploreContent() {
                   alt={photo.title}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="object-cover object-top sm:object-center transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                 />
 
