@@ -9,6 +9,7 @@ import { usePhotos } from "@/context/PhotoContext";
 import { useToast } from "@/context/ToastContext";
 import UploadModal from "@/components/UploadModal";
 import UserAvatar from "@/components/UserAvatar";
+import { useTheme } from "@/context/ThemeContext";
 import {
   Camera,
   Search,
@@ -22,6 +23,8 @@ import {
   Menu,
   X,
   UploadCloud,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -29,6 +32,7 @@ export default function Navbar() {
   const { isLoggedIn, user, role, logout } = useAuth();
   const { isUploadModalOpen, openUploadModal, closeUploadModal, favorites } = usePhotos();
   const { toast } = useToast();
+  const { theme, toggleTheme } = useTheme();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -49,12 +53,13 @@ export default function Navbar() {
     ? [
         { name: "Home", href: "/", icon: Home },
         { name: "Explore All", href: "/explore", icon: Compass },
-        { name: `Favorites (${favorites.length})`, href: "/explore?tab=favorites", icon: Heart },
-        { name: "Albums", href: "/profile?tab=albums", icon: FolderOpen },
+        { name: `Favorites (${favorites.length})`, href: "/favorites", icon: Heart },
+        { name: "Albums", href: "/albums", icon: FolderOpen },
       ]
     : [
         { name: "Home", href: "/", icon: Home },
         { name: "Photography", href: "/explore", icon: Compass },
+        { name: "Albums", href: "/albums", icon: FolderOpen },
       ];
 
   const handleLogout = () => {
@@ -120,6 +125,21 @@ export default function Navbar() {
             >
               <Search className="h-4 w-4" />
             </Link>
+
+            {/* Theme Toggle (Dark / Light) */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+              title={theme === "dark" ? "Light Gallery Mode" : "Dark Cinema Mode"}
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4 text-amber-300" />
+              ) : (
+                <Moon className="h-4 w-4 text-purple-400" />
+              )}
+            </button>
 
             {/* Upload Button: Unlocked for logged-in members */}
             {isLoggedIn ? (
@@ -336,6 +356,18 @@ export default function Navbar() {
                   </Link>
                 </div>
               )}
+              {/* Mobile Theme Toggle */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="mt-2 flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-xs font-semibold text-gray-300"
+              >
+                <span className="flex items-center gap-2">
+                  {theme === "dark" ? <Sun className="h-4 w-4 text-amber-300" /> : <Moon className="h-4 w-4 text-purple-400" />}
+                  <span>{theme === "dark" ? "Light Gallery Mode" : "Dark Cinema Mode"}</span>
+                </span>
+                <span className="text-[10px] uppercase text-purple-400 font-bold">Switch</span>
+              </button>
             </div>
           </div>
         )}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { User } from "lucide-react";
 
@@ -30,6 +30,11 @@ export default function UserAvatar({
 }: UserAvatarProps) {
   const [imgError, setImgError] = useState(false);
 
+  // Reset error state when src changes (e.g. after avatar crop or login)
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
+
   // Generate clean initials from user's full name (e.g., "Md. Abdullah" -> "MA")
   const getInitials = (n?: string | null): string => {
     if (!n) return "";
@@ -43,18 +48,21 @@ export default function UserAvatar({
   const initials = getInitials(name);
   const containerSize = sizeClasses[size] || sizeClasses.md;
 
-  const hasValidImage = src && !imgError && src.trim() !== "";
+  const hasValidImage = Boolean(src && !imgError && src.trim() !== "");
+  const isDataOrBlob = Boolean(src && (src.startsWith("data:") || src.startsWith("blob:")));
 
   return (
     <div
       className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold select-none transition-all ${containerSize} ${className}`}
     >
-      {hasValidImage ? (
+      {hasValidImage && src ? (
         <Image
           src={src}
-          alt={name || "User Avatar"}
+          alt=""
+          aria-hidden="true"
           fill
           priority={priority}
+          unoptimized={isDataOrBlob}
           sizes="(max-width: 640px) 120px, 160px"
           className="object-cover"
           onError={() => setImgError(true)}

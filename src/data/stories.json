@@ -1,0 +1,117 @@
+[
+  {
+    "slug": "sylhet-journey-through-emerald-green",
+    "title": "Sylhet — A Journey Through Emerald Waters & Whispering Hills",
+    "subtitle": "Where monsoon mist kisses freshwater swamp forests and stone beds of Jaflong sing.",
+    "author": "Md. Abdullah Al Mamun",
+    "date": "August 2024",
+    "location": "Jaflong & Ratargul, Sylhet, Bangladesh",
+    "readTime": "4 min read",
+    "coverImage": "/images/travel/Shylet/IMG_5879.JPG",
+    "excerpt": "Floating through the submerged canopy of Ratargul while early morning sunlight pierced the leaves was a moment of complete stillness.",
+    "intro": "Sylhet has always held an ethereal charm for landscape seekers. The transition from bustling urban highways into rolling tea plantations and mist-shrouded riverbeds feels like entering another dimension. In this photo essay, we retrace the route along the border waters, freshwater mangrove roots, and mountain runoff streams.",
+    "sections": [
+      {
+        "heading": "The Living Canopy of Ratargul",
+        "content": "Gliding silently in a wooden country boat through the labyrinth of flooded koroch and hijol trees, the only sound is the rhythmic dipping of the oar. Water reflects green so vivid it looks painted. Every branch hangs low with moss, sheltering kingfishers and wild herons.",
+        "images": [
+          {
+            "src": "/images/travel/Shylet/IMG_5879.JPG",
+            "caption": "Serene turquoise current winding through stone foothills."
+          },
+          {
+            "src": "/images/travel/Shylet/IMG_5874.JPG",
+            "caption": "Reflections of monsoon clouds over calm tributaries."
+          }
+        ]
+      },
+      {
+        "heading": "Jaflong & The Whispering Stones",
+        "content": "Further northeast where the Dawki river pours down from the Meghalaya plateau, the water turns to glass. Local wooden canoes navigate between pebbles washed smooth by centuries of glacial currents.",
+        "images": [
+          {
+            "src": "/images/travel/Shylet/IMG_5890.JPG",
+            "caption": "The dramatic cliffside silhouettes bordering the clear water."
+          },
+          {
+            "src": "/images/travel/Shylet/IMG_5898.JPG",
+            "caption": "A moment of quiet contemplation by the shoreline."
+          }
+        ]
+      }
+    ],
+    "conclusion": "Photography in Sylhet is a lesson in patience and respect for natural light. As the sun sinks behind the Khasi hills, turning the sky into violet dust, one realizes that photographs are merely keepsakes of feeling alive."
+  },
+  {
+    "slug": "bubt-chronicles",
+    "title": "BUBT Chronicles — Memories, Campus Rain & Brotherhood",
+    "subtitle": "A personal visual archive honoring university life, tech dreams, and unbreakable bonds.",
+    "author": "Md. Abdullah Al Mamun",
+    "date": "March 2024",
+    "location": "BUBT Campus, Mirpur, Dhaka",
+    "readTime": "5 min read",
+    "coverImage": "/images/BUBT/IMG_2807.JPG",
+    "excerpt": "Years of university pass in the blink of an eye, but photographs preserve every laugh in the cafeteria and late-night project sprint.",
+    "intro": "The campus was more than just classrooms and code repositories; it was the crucible where friendships were forged, ambitions took root, and rainy afternoons brought spontaneous tea and endless debate. This visual journal celebrates that irreplaceable chapter.",
+    "sections": [
+      {
+        "heading": "Corridors of Ambition",
+        "content": "From the quiet stillness of early morning lecture rooms to the sudden flurry of energy between classes, the red brick and glass architecture was our daily backdrop. Camera in hand, every shadow and silhouette told a story of future engineers and visionaries.",
+        "images": [
+          {
+            "src": "/images/BUBT/IMG_2807.JPG",
+            "caption": "BUBT campus grounds illuminated under the golden afternoon glow."
+          },
+          {
+            "src": "/images/BUBT/IMG_2814.JPG",
+            "caption": "Quiet moments of study and reflection between academic sessions."
+          }
+        ]
+      },
+      {
+        "heading": "The Brotherhood Beyond The Screen",
+        "content": "True brotherhood isn't declared; it's proven in the shared laughter over chaotic debug sessions, shared meals, and unwavering mutual support during tough exams. These candid frames captured the soul of our circle.",
+        "images": [
+          {
+            "src": "/images/Group-Photo/IMG_2285.JPG",
+            "caption": "Standing united — companions on the journey through technology and life."
+          },
+          {
+            "src": "/images/Memorise/IMG_0079.JPG",
+            "caption": "Unscripted joy and genuine camaraderie on campus grounds."
+          }
+        ]
+      }
+    ],
+    "conclusion": "Campuses stay the same, but cohorts move on into the world. Looking back at these photographs reminds us that no matter where life leads, the memories remain forever etched in frame."
+  },
+  {
+    "slug": "untamed-horizons",
+    "title": "Untamed Horizons — Golden Sunsets & Rural Bengal Silence",
+    "subtitle": "Catching the golden hour where village pathways meet the eternal horizons of Bengal.",
+    "author": "Md. Abdullah Al Mamun",
+    "date": "December 2023",
+    "location": "Tangail & Rural Bengal",
+    "readTime": "3 min read",
+    "coverImage": "/images/hero-landscape.jpg",
+    "excerpt": "When the sun dips below the mustard fields, rural Bengal turns into a warm canvas of ochre, bronze, and velvet blue.",
+    "intro": "Away from the relentless rhythm of urban traffic lies the tranquil soul of Bengal. In the quiet districts of Tangail and village riverbanks, time slows to the pace of drifting boats and grazing cattle against boundless skies.",
+    "sections": [
+      {
+        "heading": "The Twilight Transition",
+        "content": "There is a fleeting twenty-minute window when daylight surrenders to dusk. The dust kicked up by homeward-bound cattle catches the low sun, creating a natural golden diffusion filter that no studio can replicate.",
+        "images": [
+          {
+            "src": "/images/hero-landscape.jpg",
+            "caption": "The vast expanse of evening sky reflecting over the lowlands."
+          },
+          {
+            "src": "/images/travel/Tangail/IMG_4210.JPG",
+            "caption": "Heritage structures and rural stillness bathed in evening amber."
+          }
+        ]
+      }
+    ],
+    "conclusion": "Landscape photography is ultimately an act of gratitude. Standing silently behind the tripod while the world winds down is the closest thing to meditation."
+  }
+]

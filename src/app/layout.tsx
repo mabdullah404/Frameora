@@ -16,8 +16,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Frameora - Photography & Visual Stories",
-  description: "Discover extraordinary photography collections, places, and stories through the lens.",
+  metadataBase: new URL("https://frameora-delta.vercel.app"),
+  title: {
+    default: "Frameora — Editorial Photography & Visual Stories",
+    template: "%s — Frameora",
+  },
+  description: "Curated photography sanctuary and visual journal preserving authentic landscapes, travel moments, and community frames.",
+  keywords: ["photography", "landscape photography", "visual stories", "travel photography", "Bangladesh", "Frameora", "photo essays", "editorial portfolio"],
+  authors: [{ name: "Md. Abdullah Al Mamun" }],
+  creator: "Md. Abdullah Al Mamun",
+  openGraph: {
+    title: "Frameora — Editorial Photography & Visual Stories",
+    description: "Discover extraordinary photography collections, places, and visual journals through the lens.",
+    url: "https://frameora-delta.vercel.app",
+    siteName: "Frameora",
+    images: [
+      {
+        url: "/images/hero-landscape.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Frameora Photography Sanctuary",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Frameora — Editorial Photography",
+    description: "Discover extraordinary photography collections through the lens.",
+    images: ["/images/hero-landscape.jpg"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

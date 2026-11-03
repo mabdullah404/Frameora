@@ -9,6 +9,8 @@ import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
 import { useToast } from "@/context/ToastContext";
 import LightboxModal from "@/components/LightboxModal";
+import UserAvatar from "@/components/UserAvatar";
+import EmptyState from "@/components/EmptyState";
 import {
   Search,
   Heart,
@@ -18,6 +20,8 @@ import {
   SlidersHorizontal,
   Compass,
   UploadCloud,
+  ArrowUpDown,
+  RotateCcw,
 } from "lucide-react";
 
 function ExploreContent() {
@@ -31,22 +35,25 @@ function ExploreContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>(
     initialTab === "favorites" ? "Favorites" : "All"
   );
+  const [sortBy, setSortBy] = useState<"latest" | "oldest" | "likes">("latest");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [showLockedModal, setShowLockedModal] = useState(false);
 
-  // Category pills with real Favorites badge
+  // Category pills with real Favorites badge and rich categories
   const categoryPills = [
     { id: "All", label: "All", emoji: "" },
     { id: "Favorites", label: `Favorites (${favorites.length})`, emoji: "❤️" },
-    { id: "Nature", label: "Nature", emoji: "🌿" },
-    { id: "travel", label: "Travel", emoji: "✈️" },
+    { id: "Nature", label: "Nature & Landscape", emoji: "🌿" },
+    { id: "travel", label: "Travel & Scenic", emoji: "✈️" },
     { id: "Portrait", label: "Portrait", emoji: "👤" },
-    { id: "Urban", label: "Urban", emoji: "🏙️" },
+    { id: "Urban", label: "Street & Urban", emoji: "🏙️" },
     { id: "Wildlife", label: "Wildlife", emoji: "🐾" },
-    { id: "BUBT", label: "Campus", emoji: "🎓", memberOnly: true },
+    { id: "Abstract", label: "Abstract", emoji: "🌀" },
+    { id: "BUBT", label: "Campus Life", emoji: "🎓", memberOnly: true },
+    { id: "Memorise", label: "Memories", emoji: "📸", memberOnly: true },
     { id: "Mems", label: "Funny Mems", emoji: "😂", memberOnly: true },
-    { id: "Others", label: "Others", emoji: "🔲" },
+    { id: "Others", label: "More", emoji: "🔲" },
   ];
 
   // Filter accessible photos based on auth status and strict privacy
@@ -68,10 +75,10 @@ function ExploreContent() {
     return publicOrOwn;
   }, [photos, isLoggedIn, user]);
 
-  // Filtered photos based on search and category
+  // Filtered and Sorted photos based on search, category and sort order
   const filteredPhotos = useMemo(() => {
     const query = searchTerm.toLowerCase().trim();
-    return accessiblePhotos.filter((photo) => {
+    const result = accessiblePhotos.filter((photo) => {
       const matchesSearch =
         !query ||
         photo.title.toLowerCase().includes(query) ||
@@ -87,6 +94,10 @@ function ExploreContent() {
           matchesCat = photo.category !== "Nature" && photo.category !== "travel";
         } else if (selectedCategory === "Nature") {
           matchesCat = photo.category === "Nature" || photo.category === "Photography";
+        } else if (selectedCategory === "Memorise") {
+          matchesCat = photo.folder === "Memorise" || photo.category === "Memories";
+        } else if (selectedCategory === "Abstract") {
+          matchesCat = photo.category.toLowerCase() === "abstract" || photo.category === "Art";
         } else {
           matchesCat =
             photo.category.toLowerCase() === selectedCategory.toLowerCase() ||
@@ -96,7 +107,17 @@ function ExploreContent() {
 
       return matchesSearch && matchesCat;
     });
-  }, [accessiblePhotos, searchTerm, selectedCategory, isFavorite]);
+
+    // Apply sorting
+    if (sortBy === "likes") {
+      result.sort((a, b) => getLikesCount(b.id) - getLikesCount(a.id));
+    } else if (sortBy === "oldest") {
+      result.reverse();
+    }
+    // "latest" keeps default chronological / newest order
+
+    return result;
+  }, [accessiblePhotos, searchTerm, selectedCategory, isFavorite, sortBy, getLikesCount]);
 
   const handlePhotoClick = (index: number) => {
     setLightboxIndex(index);
@@ -161,15 +182,30 @@ function ExploreContent() {
           )}
 
           {/* Search Input */}
-          <div className="relative flex-1 md:w-72">
+          <div className="relative flex-1 md:w-64">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by title, location, tag..."
+              placeholder="Search title, location, tag..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full rounded-2xl border border-white/10 bg-[#121422] pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 backdrop-blur-xl focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
             />
+          </div>
+
+          {/* Sort Selector */}
+          <div className="relative">
+            <select
+              value={sortBy}
+              aria-label="Sort Photos"
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="appearance-none rounded-2xl border border-white/10 bg-[#121422] pl-3.5 pr-8 py-2.5 text-xs font-semibold text-gray-200 backdrop-blur-xl focus:border-purple-500 focus:outline-none hover:border-purple-500/40 cursor-pointer"
+            >
+              <option value="latest" className="bg-[#121422] text-white">Latest Uploads</option>
+              <option value="oldest" className="bg-[#121422] text-white">Oldest Captures</option>
+              <option value="likes" className="bg-[#121422] text-white">Most Liked ❤️</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
           </div>
 
           {/* Quick Clear or Favorites Toggle */}
@@ -285,20 +321,18 @@ function ExploreContent() {
                   {photo.category}
                 </span>
 
-                {/* Bottom Overlay: Strictly Abdullah with Avatar */}
+                {/* Bottom Overlay: Photographer & Title */}
                 <div className="absolute bottom-0 inset-x-0 p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="relative h-8 w-8 overflow-hidden rounded-full border-2 border-purple-500/50 shadow-md shrink-0">
-                      <Image
-                        src="/images/Abdullah/FB_IMG_1790540440153.jpg"
-                        alt="Abdullah"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <UserAvatar
+                      src={photo.photographer === "Abdullah" || photo.photographer?.includes("Mamun") ? "/images/Abdullah/FB_IMG_1790540440153.jpg" : undefined}
+                      name={photo.photographer || "Creator"}
+                      size="sm"
+                      className="border border-purple-500/40 shrink-0"
+                    />
                     <div className="flex flex-col min-w-0">
                       <span className="text-xs font-bold text-white drop-shadow-md truncate">
-                        Abdullah
+                        {photo.photographer || "Abdullah"}
                       </span>
                       <span className="text-[10px] text-gray-300 line-clamp-1 drop-shadow-sm truncate">
                         {photo.title}
@@ -318,24 +352,21 @@ function ExploreContent() {
 
       {/* Empty State */}
       {filteredPhotos.length === 0 && (
-        <div className="mt-16 text-center py-16 rounded-3xl border border-white/10 bg-[#121422]/50">
-          <p className="text-lg font-bold text-white">
-            {selectedCategory === "Favorites" ? "No favorite photos yet" : "No photos matched your search"}
-          </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {selectedCategory === "Favorites"
-              ? "Click the heart button on any photo in the gallery to collect them here!"
-              : "Try another keyword or select All"}
-          </p>
-          <button
-            onClick={() => {
+        <div className="mt-12">
+          <EmptyState
+            type={selectedCategory === "Favorites" ? "favorites" : "search"}
+            title={selectedCategory === "Favorites" ? "No favorite photos collected yet" : `No frames matched "${searchTerm}"`}
+            description={
+              selectedCategory === "Favorites"
+                ? "Click the heart button on any photo in the gallery to collect them into your personal favorites!"
+                : "We couldn't find any photographs matching your current search and filters. Try adjusting terms or exploring other categories."
+            }
+            actionText="Reset All Filters"
+            onAction={() => {
               setSearchTerm("");
               setSelectedCategory("All");
             }}
-            className="mt-4 rounded-full bg-purple-600 px-5 py-2 text-xs font-semibold text-white"
-          >
-            Show All Photos
-          </button>
+          />
         </div>
       )}
 

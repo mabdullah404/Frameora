@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { usePhotos } from "@/context/PhotoContext";
 import { useToast } from "@/context/ToastContext";
 import UserAvatar from "@/components/UserAvatar";
+import LightboxModal from "@/components/LightboxModal";
 import {
   ArrowLeft,
   Heart,
@@ -16,6 +17,12 @@ import {
   Lock,
   MapPin,
   Check,
+  Maximize2,
+  Calendar,
+  FolderOpen,
+  Camera,
+  Shield,
+  Tag,
 } from "lucide-react";
 
 export default function PhotoDetailClient({ id }: { id: string }) {
@@ -32,6 +39,7 @@ export default function PhotoDetailClient({ id }: { id: string }) {
   });
   const [userReaction, setUserReaction] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   if (!photo) {
     return notFound();
@@ -51,12 +59,32 @@ export default function PhotoDetailClient({ id }: { id: string }) {
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard?.writeText(window.location.href);
-      setCopied(true);
-      toast.success("🔗 ছবির লিঙ্ক ক্লিপবোর্ডে কপি হয়েছে!");
-      setTimeout(() => setCopied(false), 2000);
+      const shareData = {
+        title: `${photo.title} — Frameora`,
+        text: `Check out this photograph "${photo.title}" on Frameora`,
+        url: window.location.href,
+      };
+
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        try {
+          await navigator.share(shareData);
+          toast.success("✅ শেয়ার সম্পন্ন হয়েছে!");
+          return;
+        } catch (err: any) {
+          if (err.name === "AbortError") return;
+        }
+      }
+
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        toast.success("🔗 ছবির লিঙ্ক ক্লিপবোর্ডে কপি হয়েছে!");
+        setTimeout(() => setCopied(false), 2500);
+      } catch {
+        toast.info("লিঙ্ক: " + window.location.href);
+      }
     }
   };
 
@@ -173,15 +201,27 @@ export default function PhotoDetailClient({ id }: { id: string }) {
           {/* Main Photo Card */}
           <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#121422] shadow-2xl">
             {/* The Image */}
-            <div className="relative min-h-[420px] sm:min-h-[580px] w-full bg-black/40 flex items-center justify-center">
+            <div className="relative min-h-[420px] sm:min-h-[580px] w-full bg-black/40 flex items-center justify-center group/img">
               <Image
                 src={photo.image}
                 alt={photo.title}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 1200px"
-                className="object-contain"
+                className="object-contain cursor-pointer"
+                onClick={() => setIsLightboxOpen(true)}
               />
+
+              {/* Fullscreen Trigger Overlay Pill */}
+              <button
+                type="button"
+                onClick={() => setIsLightboxOpen(true)}
+                className="absolute top-4 right-4 flex items-center gap-2 rounded-full bg-black/70 border border-white/20 px-4 py-2 text-xs font-semibold text-white backdrop-blur-md hover:bg-purple-600 hover:border-purple-500 transition-all shadow-xl"
+                title="View Fullscreen Lightbox"
+              >
+                <Maximize2 className="h-3.5 w-3.5 text-purple-300" />
+                <span>Fullscreen</span>
+              </button>
             </div>
 
             {/* Bottom Meta & Reactions Bar */}
@@ -271,28 +311,83 @@ export default function PhotoDetailClient({ id }: { id: string }) {
                 </div>
               </div>
 
-              {/* Reaction Badges */}
-              <div className="mt-6 pt-6 border-t border-white/[0.08] flex items-center gap-3">
-                <span className="text-xs text-gray-400 font-semibold mr-2">Reactions:</span>
-                {[
-                  { key: "love", emoji: "❤️", count: reactions.love },
-                  { key: "fire", emoji: "🔥", count: reactions.fire },
-                  { key: "laugh", emoji: "😂", count: reactions.laugh },
-                ].map((item) => (
-                  <button
-                    key={item.key}
-                    type="button"
-                    onClick={() => handleReact(item.key)}
-                    className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-all ${
-                      userReaction === item.key
-                        ? "bg-purple-600/30 border-purple-500 text-purple-200 shadow-md"
-                        : "bg-white/5 border-white/10 text-gray-300 hover:border-purple-500/40"
-                    }`}
-                  >
-                    <span>{item.emoji}</span>
-                    <span>{item.count}</span>
-                  </button>
-                ))}
+              {/* Reaction Badges & Tags */}
+              <div className="mt-6 pt-6 border-t border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400 font-semibold mr-2">Reactions:</span>
+                  {[
+                    { key: "love", emoji: "❤️", count: reactions.love },
+                    { key: "fire", emoji: "🔥", count: reactions.fire },
+                    { key: "laugh", emoji: "😂", count: reactions.laugh },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => handleReact(item.key)}
+                      className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition-all ${
+                        userReaction === item.key
+                          ? "bg-purple-600/30 border-purple-500 text-purple-200 shadow-md"
+                          : "bg-white/5 border-white/10 text-gray-300 hover:border-purple-500/40"
+                      }`}
+                    >
+                      <span>{item.emoji}</span>
+                      <span>{item.count}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Clickable Tags */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Tag className="h-3.5 w-3.5 text-purple-400 mr-1" />
+                  {[photo.category, photo.folder, photo.location].filter(Boolean).map((t, idx) => (
+                    <Link
+                      key={idx}
+                      href={`/explore?category=${encodeURIComponent(t!)}`}
+                      className="rounded-lg border border-white/5 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium text-gray-300 hover:border-purple-500/40 hover:text-purple-300 transition-colors"
+                    >
+                      #{t}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Photo Specifications Table */}
+              <div className="mt-6 pt-6 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                  <div className="flex items-center gap-1.5 text-purple-400 mb-1">
+                    <Camera className="h-3.5 w-3.5" />
+                    <span className="font-semibold text-[11px] uppercase tracking-wider">Capture</span>
+                  </div>
+                  <div className="font-bold text-white">Original DSLR / Mobile</div>
+                  <div className="text-[10px] text-gray-400">Authentic Uncompressed</div>
+                </div>
+
+                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                  <div className="flex items-center gap-1.5 text-blue-400 mb-1">
+                    <FolderOpen className="h-3.5 w-3.5" />
+                    <span className="font-semibold text-[11px] uppercase tracking-wider">Collection</span>
+                  </div>
+                  <div className="font-bold text-white capitalize">{photo.folder || "Photography"}</div>
+                  <div className="text-[10px] text-gray-400">Curated Album</div>
+                </div>
+
+                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                  <div className="flex items-center gap-1.5 text-emerald-400 mb-1">
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span className="font-semibold text-[11px] uppercase tracking-wider">Location</span>
+                  </div>
+                  <div className="font-bold text-white truncate">{photo.location || "Bangladesh"}</div>
+                  <div className="text-[10px] text-gray-400">Geotagged Sanctuary</div>
+                </div>
+
+                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                  <div className="flex items-center gap-1.5 text-amber-400 mb-1">
+                    <Shield className="h-3.5 w-3.5" />
+                    <span className="font-semibold text-[11px] uppercase tracking-wider">License</span>
+                  </div>
+                  <div className="font-bold text-white">Frameora Portfolio</div>
+                  <div className="text-[10px] text-gray-400">Personal & Editorial Use</div>
+                </div>
               </div>
             </div>
           </div>
@@ -320,6 +415,17 @@ export default function PhotoDetailClient({ id }: { id: string }) {
             </div>
           )}
         </div>
+      )}
+
+      {/* Lightbox Modal */}
+      {isLightboxOpen && (
+        <LightboxModal
+          photos={[photo, ...relatedPhotos]}
+          currentIndex={0}
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          onNavigate={() => {}}
+        />
       )}
     </main>
   );

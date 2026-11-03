@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import photosData from "@/data/photos.json";
 import PhotoDetailClient from "./PhotoDetailClient";
 
@@ -9,6 +10,49 @@ export function generateStaticParams() {
   return photosData.map((p) => ({
     id: p.id,
   }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const photo = photosData.find((p) => p.id === id);
+
+  if (!photo) {
+    return {
+      title: "Photo Not Found — Frameora",
+      description: "The requested photograph could not be found.",
+    };
+  }
+
+  const title = `${photo.title} — Frameora Photography`;
+  const description = photo.description || `Explore ${photo.title} by ${photo.photographer || "Md. Abdullah Al Mamun"} on Frameora.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: photo.image,
+          width: 1200,
+          height: 630,
+          alt: photo.title,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [photo.image],
+    },
+  };
 }
 
 async function PhotoContent({

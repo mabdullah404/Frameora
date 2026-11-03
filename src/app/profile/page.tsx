@@ -30,6 +30,7 @@ import LightboxModal from "@/components/LightboxModal";
 import UserAvatar from "@/components/UserAvatar";
 import ImageCropModal from "@/components/ImageCropModal";
 import ProfileEditModal from "@/components/ProfileEditModal";
+import EmptyState from "@/components/EmptyState";
 import type { Photo } from "@/types/photo";
 
 export default function ProfilePage() {
@@ -216,28 +217,146 @@ export default function ProfilePage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center px-4 py-16">
-        <div className="max-w-md w-full rounded-3xl border border-white/10 bg-[#121422]/80 p-8 text-center backdrop-blur-xl shadow-2xl">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-600/20 text-purple-400 border border-purple-500/30 mb-6">
-            <Lock className="h-8 w-8" />
-          </div>
-          <h2 className="text-2xl font-bold text-white">Profile Restricted</h2>
-          <p className="mt-2 text-sm text-gray-400 leading-relaxed">
-            Please sign in to view your profile, manage uploads, and view private collections.
-          </p>
-          <div className="mt-6 flex flex-col gap-3">
-            <Link
-              href="/signin"
-              className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all text-center"
-            >
-              Sign In to View
-            </Link>
-            <Link
-              href="/explore"
-              className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/10 text-center"
-            >
-              Back to Public Explore
-            </Link>
+      <div className="min-h-[85vh] py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center justify-center">
+        {/* Glow backdrop */}
+        <div className="relative w-full">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/15 blur-[120px] rounded-full pointer-events-none" />
+
+          {/* Member Preview Card */}
+          <div className="relative rounded-3xl border border-white/10 bg-[#121422]/90 p-6 sm:p-10 backdrop-blur-2xl shadow-2xl overflow-hidden">
+            
+            {/* Top Badge */}
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600/20 text-purple-400 border border-purple-500/30">
+                  <Camera className="h-6 w-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-purple-300">
+                    Frameora Membership Preview
+                  </span>
+                  <h1 className="text-xl sm:text-2xl font-black text-white">
+                    Unlock Your Personal Photography Sanctuary
+                  </h1>
+                </div>
+              </div>
+
+              <div className="hidden sm:flex items-center gap-2">
+                <Link
+                  href="/signin"
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-purple-600/30 hover:bg-purple-500 transition-colors"
+                >
+                  Create Account
+                </Link>
+              </div>
+            </div>
+
+            {/* Simulated Blurred Member Card Preview */}
+            <div className="mt-8 rounded-2xl border border-white/[0.08] bg-[#0a0b10]/60 p-6 backdrop-blur-md relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <div className="relative h-20 w-20 rounded-full border-2 border-purple-500/40 bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center text-white text-xl font-black shadow-lg shrink-0">
+                  <span>FP</span>
+                </div>
+                <div className="text-center sm:text-left flex-1">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <h2 className="text-lg font-bold text-white">Your Name Here</h2>
+                    <span className="rounded-full bg-purple-500/20 border border-purple-500/30 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-purple-300">
+                      Verified Member
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-400">
+                    Visual storyteller & passionate observer of natural beauty and light.
+                  </p>
+                  
+                  {/* Simulated Stats Row */}
+                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-center">
+                      <div className="text-base font-extrabold text-white">My Gallery</div>
+                      <div className="text-[10px] text-gray-400 uppercase tracking-wider">Upload & Share</div>
+                    </div>
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-center">
+                      <div className="text-base font-extrabold text-rose-400">Favorites</div>
+                      <div className="text-[10px] text-gray-400 uppercase tracking-wider">Saved Frames</div>
+                    </div>
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-center">
+                      <div className="text-base font-extrabold text-blue-400">6+ Albums</div>
+                      <div className="text-[10px] text-gray-400 uppercase tracking-wider">Organized Sets</div>
+                    </div>
+                    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-center">
+                      <div className="text-base font-extrabold text-emerald-400">Original Res</div>
+                      <div className="text-[10px] text-gray-400 uppercase tracking-wider">Uncompressed DL</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Features Highlight Grid */}
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 hover:border-purple-500/30 transition-all">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 mb-3">
+                  <UploadCloud className="h-5 w-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white">Personal Cloud Gallery</h3>
+                <p className="mt-1.5 text-xs text-gray-400 leading-relaxed">
+                  Upload your own high-resolution photographs, manage public and private visibility, and track stats.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 hover:border-purple-500/30 transition-all">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-400 mb-3">
+                  <Heart className="h-5 w-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white">Curated Favorites</h3>
+                <p className="mt-1.5 text-xs text-gray-400 leading-relaxed">
+                  Save stunning frames with one click. Your favorites sync across all your devices seamlessly.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 hover:border-purple-500/30 transition-all">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 mb-3">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white">Exclusive Member Vaults</h3>
+                <p className="mt-1.5 text-xs text-gray-400 leading-relaxed">
+                  Unlock restricted travel journals, BUBT Campus moments, brotherhood archives, and humor collections.
+                </p>
+              </div>
+            </div>
+
+            {/* Bottom Bengali CTA Box */}
+            <div className="mt-8 rounded-2xl border border-purple-500/30 bg-purple-950/20 p-5 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <h4 className="text-sm font-bold text-white">
+                  সম্পূর্ণ ফিচার উপভোগ করতে এখনই সাইন ইন করুন
+                </h4>
+                <p className="mt-1 text-xs text-purple-200/80">
+                  গুগল অ্যাকাউন্ট বা ইমেইল দিয়ে মাত্র কয়েক সেকেন্ডে ফ্রি অ্যাকাউন্ট তৈরি করুন।
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 shrink-0">
+                <Link
+                  href="/signin"
+                  className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 hover:brightness-110 transition-all"
+                >
+                  সাইন ইন করুন
+                </Link>
+                <Link
+                  href="/signup"
+                  className="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 transition-all"
+                >
+                  ফ্রি রেজিস্ট্রেশন
+                </Link>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -522,23 +641,13 @@ export default function ProfilePage() {
           </div>
 
           {myUploadedPhotos.length === 0 ? (
-            <div className="py-16 text-center rounded-3xl border border-white/10 bg-[#121422]/50">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-600/10 text-purple-400 border border-purple-500/20 mb-3">
-                <UploadCloud className="h-6 w-6" />
-              </div>
-              <p className="text-sm font-semibold text-white">You haven&apos;t uploaded any photos yet</p>
-              <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-                Share your first photo frame! You can choose Public (explore gallery) or Private (exclusive to your account).
-              </p>
-              <button
-                type="button"
-                onClick={openUploadModal}
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 hover:brightness-110"
-              >
-                <UploadCloud className="h-4 w-4" />
-                <span>Upload First Photo</span>
-              </button>
-            </div>
+            <EmptyState
+              type="uploads"
+              title="You haven't uploaded any photos yet"
+              description="Share your first photo frame! You can choose Public (explore gallery) or Private (exclusive to your account)."
+              actionText="Upload First Photo"
+              onAction={openUploadModal}
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {myUploadedPhotos.map((photo, idx) => (
@@ -675,15 +784,13 @@ export default function ProfilePage() {
           </div>
 
           {albums.length === 0 ? (
-            <div className="py-16 text-center rounded-3xl border border-white/10 bg-[#121422]/50">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-600/10 text-purple-400 border border-purple-500/20 mb-3">
-                <FolderOpen className="h-6 w-6" />
-              </div>
-              <p className="text-sm font-semibold text-white">No custom albums yet</p>
-              <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-                Explore the public gallery or upload photos to organize them into albums.
-              </p>
-            </div>
+            <EmptyState
+              type="albums"
+              title="No custom albums yet"
+              description="Explore the public gallery or upload photos to organize them into albums."
+              actionText="Browse Explore Gallery"
+              actionHref="/explore"
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {albums.map((album) => (
@@ -741,21 +848,13 @@ export default function ProfilePage() {
           </div>
 
           {favoritePhotos.length === 0 ? (
-            <div className="py-16 text-center rounded-3xl border border-white/10 bg-[#121422]/50">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 mb-3">
-                <Heart className="h-6 w-6" />
-              </div>
-              <p className="text-sm font-semibold text-white">No favorite photos collected yet</p>
-              <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
-                Click the heart icon on any photo in the Explore Gallery to save it directly into your personal favorites collection!
-              </p>
-              <Link
-                href="/explore"
-                className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-purple-600 px-5 py-2 text-xs font-semibold text-white hover:bg-purple-500"
-              >
-                Go to Explore Gallery
-              </Link>
-            </div>
+            <EmptyState
+              type="favorites"
+              title="No favorite photos collected yet"
+              description="Click the heart icon on any photo in the Explore Gallery to save it directly into your personal favorites collection!"
+              actionText="Go to Explore Gallery"
+              actionHref="/explore"
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {favoritePhotos.map((photo, idx) => (
